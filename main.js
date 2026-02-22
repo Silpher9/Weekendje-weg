@@ -6,10 +6,9 @@ import L from 'leaflet';
 
 // --- Trip Imports ---
 import tilburg from './trips/tilburg.js';
-import tilburgV2 from './trips/tilburg-v2.js';
 
 // All trips (add new imports here)
-const trips = [tilburg, tilburgV2];
+const trips = [tilburg];
 
 // --- State ---
 let currentTrip = trips[0];
