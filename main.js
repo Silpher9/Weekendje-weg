@@ -164,24 +164,58 @@ function createCategoryHTML(category) {
   const placesHTML = category.places.map(place => {
     const slug = slugify(place.name);
     return `
-      <article class="place-card" data-type="${category.type}">
+      <article class="place-card ${place.isWildcard ? 'place-card-wildcard' : ''}" data-type="${category.type}">
         ${place.image ? `
         <div class="place-image-wrapper">
           <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy">
         </div>
         ` : ''}
         <div class="place-content">
-          <h3 class="place-name">${place.name}</h3>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <h3 class="place-name">
+              ${place.isWildcard ? '<i data-lucide="star" class="wildcard-icon" style="color: var(--color-restaurant); width: 16px; margin-right: 4px; display: inline-block; vertical-align: text-bottom;"></i> ' : ''}
+              ${place.name}
+            </h3>
+            ${place.priceLevel ? `
+            <div class="place-price" title="Prijsniveau: ${place.priceLevel} / 3">
+               <span style="color: ${place.priceLevel >= 1 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
+               <span style="color: ${place.priceLevel >= 2 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
+               <span style="color: ${place.priceLevel >= 3 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
+            </div>
+            ` : ''}
+          </div>
           <p class="place-description">${place.description}</p>
           
           <div class="place-address">
             <i data-lucide="map-pin" class="place-address-icon"></i>
             <span>${place.address}</span>
           </div>
+
+          ${place.openingHours ? `
+          <div class="place-hours" style="margin-top: var(--space-xs); font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: var(--space-xs);">
+            <i data-lucide="clock" style="width: 1em; height: 1em; margin-top: 2px;"></i>
+            <span>${place.openingHours}</span>
+          </div>
+          ` : ''}
           
           <div class="place-tags">
             ${place.tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
           </div>
+
+          ${place.reviews && place.reviews.length > 0 ? `
+          <details class="place-reviews-accordion">
+            <summary class="reviews-summary"><i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Bekijk ${place.reviews.length} reviews</summary>
+            <div class="reviews-content">
+              ${place.reviews.map(r => `
+                <div class="review-item">
+                  <div class="review-stars">★★★★★</div>
+                  <p class="review-text">"${r.text}"</p>
+                  <span class="review-author">— ${r.author}</span>
+                </div>
+              `).join('')}
+            </div>
+          </details>
+          ` : ''}
 
           <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
             ${place.link ? `
