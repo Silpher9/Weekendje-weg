@@ -6,17 +6,18 @@ import L from 'leaflet';
 
 // --- Trip Imports ---
 import tilburg from './trips/tilburg.js';
+import leeuwarden from './trips/leeuwarden.js';
 
 // --- Interactive Feature Imports ---
 import { showUserPicker } from './components/user-picker.js';
 import { heartHTML, updateHeartUI, attachHeartListeners } from './components/hearts.js';
 import { noteHTML, updateNoteUI, attachNoteListeners } from './components/notes.js';
 import { rankHTML, updateRankUI, attachRankListeners } from './components/ranking.js';
-import { subscribeToTrip, unsubscribeFromTrip, placeSlug, getAllPlaceData, getUserAddedPlaces, deleteUserPlace } from './store.js';
+import { subscribeToTrip, unsubscribeFromTrip, placeSlug, getAllPlaceData, getUserAddedPlaces, deleteUserPlace, isMutualReject } from './store.js';
 import { renderAddPlaceFAB, removeAddPlaceFAB } from './components/add-place.js';
 
 // All trips (add new imports here)
-const trips = [tilburg];
+const trips = [tilburg, leeuwarden];
 
 // --- State ---
 let currentTrip = trips[0];
@@ -184,6 +185,13 @@ function renderTrip(trip) {
       });
     });
 
+    // --- Attach archive toggle listeners ---
+    document.querySelectorAll('.archive-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.category-archive').classList.toggle('open');
+      });
+    });
+
     // --- Attach interactive feature listeners ---
     attachHeartListeners(contentContainer, trip.id);
     attachNoteListeners(contentContainer, trip.id);
@@ -199,6 +207,7 @@ function renderTrip(trip) {
     subscribeToTrip(trip.id, (data) => {
       updateAllInteractiveUI(trip);
       renderUserAddedPlaces(trip);
+      updateArchiveState(trip);
     });
 
     // Fade in
@@ -224,6 +233,56 @@ function updateAllInteractiveUI(trip) {
     updateHeartUI(place.slug);
     updateNoteUI(place.slug);
     updateRankUI(place.slug);
+  });
+}
+
+// --- Archive state: move/restore cards on mutual reject ---
+function updateArchiveState(trip) {
+  document.querySelectorAll('.category-section').forEach(section => {
+    const inner = section.querySelector('.category-places-inner');
+    const archive = section.querySelector('.category-archive');
+    const archivePlaces = section.querySelector('.archive-places');
+    if (!inner || !archive || !archivePlaces) return;
+
+    // Check all cards in this section (both in main and archive)
+    const allCards = section.querySelectorAll('.place-card');
+    let archiveCount = 0;
+
+    allCards.forEach(card => {
+      const slug = card.dataset.placeSlug;
+      if (!slug) return;
+
+      const rejected = isMutualReject(slug);
+
+      if (rejected && !card.classList.contains('place-card--archived')) {
+        // Move to archive
+        card.classList.add('place-card--archived');
+        archivePlaces.appendChild(card);
+      } else if (!rejected && card.classList.contains('place-card--archived')) {
+        // Restore from archive
+        card.classList.remove('place-card--archived');
+        inner.appendChild(card);
+      }
+
+      if (card.classList.contains('place-card--archived')) {
+        archiveCount++;
+      }
+    });
+
+    // Update archive visibility and count
+    const countEl = archive.querySelector('.archive-count');
+    if (countEl) countEl.textContent = archiveCount;
+    archive.hidden = archiveCount === 0;
+
+    // Update category count (visible cards only)
+    const categoryType = section.dataset.type;
+    const category = trip.categories.find(c => c.type === categoryType);
+    const countHeader = section.querySelector('.category-count');
+    if (countHeader && category) {
+      const visibleStatic = inner.querySelectorAll(`.place-card:not([data-user-added])`).length;
+      const visibleDynamic = inner.querySelectorAll(`.place-card[data-user-added]`).length;
+      countHeader.textContent = visibleStatic + visibleDynamic;
+    }
   });
 }
 
@@ -499,6 +558,13 @@ function createCategoryHTML(category) {
       <div class="category-places">
         <div class="category-places-inner">
           ${placesHTML}
+        </div>
+        <div class="category-archive" hidden>
+          <button class="archive-toggle">
+            <i data-lucide="chevron-down" class="archive-chevron"></i>
+            <span class="archive-label">Gearchiveerd (<span class="archive-count">0</span>)</span>
+          </button>
+          <div class="archive-places"></div>
         </div>
       </div>
     </section>
