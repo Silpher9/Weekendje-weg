@@ -7,6 +7,14 @@ import L from 'leaflet';
 // --- Trip Imports ---
 import tilburg from './trips/tilburg.js';
 
+// --- Interactive Feature Imports ---
+import { showUserPicker } from './components/user-picker.js';
+import { heartHTML, updateHeartUI, attachHeartListeners } from './components/hearts.js';
+import { noteHTML, updateNoteUI, attachNoteListeners } from './components/notes.js';
+import { rankHTML, updateRankUI, attachRankListeners } from './components/ranking.js';
+import { subscribeToTrip, unsubscribeFromTrip, placeSlug, getAllPlaceData, getUserAddedPlaces, deleteUserPlace } from './store.js';
+import { renderAddPlaceFAB, removeAddPlaceFAB } from './components/add-place.js';
+
 // All trips (add new imports here)
 const trips = [tilburg];
 
@@ -21,7 +29,10 @@ const tabsContainer = document.getElementById('trip-tabs');
 const contentContainer = document.getElementById('trip-content');
 
 // --- Init ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Show user picker first, then render app
+  await showUserPicker();
+
   renderTabs();
   renderTrip(currentTrip);
 
@@ -40,19 +51,15 @@ function renderTabs() {
   trips.forEach(trip => {
     const btn = document.createElement('button');
     btn.className = `trip-tab ${currentTrip?.id === trip.id ? 'active' : ''}`;
-    // Gebruik de map-pin icon voor de tabbladen
     btn.innerHTML = `<i data-lucide="map-pin" style="width: 14px; height: 14px; stroke-width: 2.5"></i> ${trip.name}`;
     btn.onclick = () => selectTrip(trip.id);
     tabsContainer.appendChild(btn);
   });
 
-  // Render lucide icons in tabs na het toevoegen
   if (window.lucide) {
     window.lucide.createIcons({
       root: tabsContainer,
-      attrs: {
-        'stroke-width': 2.5
-      }
+      attrs: { 'stroke-width': 2.5 }
     });
   }
 }
@@ -61,17 +68,18 @@ function selectTrip(tripId) {
   const trip = trips.find(t => t.id === tripId);
   if (!trip) return;
 
+  // Unsubscribe from old trip
+  unsubscribeFromTrip();
+
   currentTrip = trip;
-  renderTabs(); // Update active state
+  renderTabs();
   renderTrip(trip);
 }
 
 function renderTrip(trip) {
-  // Fade out effect
   contentContainer.style.opacity = '0';
 
   setTimeout(() => {
-    // 1. Hero Banner
     const html = `
       <div class="hero">
         ${trip.banner
@@ -119,14 +127,11 @@ function renderTrip(trip) {
 
     contentContainer.innerHTML = html;
 
-    // Render lucide icons in content
     if (window.lucide) {
-      window.lucide.createIcons({
-        root: contentContainer
-      });
+      window.lucide.createIcons({ root: contentContainer });
     }
 
-    // Attach event listeners for accordions
+    // Attach category accordion listeners
     document.querySelectorAll('.category-header').forEach(header => {
       header.addEventListener('click', (e) => {
         const section = e.currentTarget.closest('.category-section');
@@ -134,7 +139,7 @@ function renderTrip(trip) {
       });
     });
 
-    // Calculate sticky offset dynamically (top-bar + tabs height)
+    // Calculate sticky offset
     const mapWrapper = document.getElementById('map-sticky-wrapper');
     const topBar = document.getElementById('top-bar');
     const tabs = document.getElementById('trip-tabs');
@@ -145,19 +150,16 @@ function renderTrip(trip) {
 
     // Map collapse/expand toggle
     const mapToggle = document.getElementById('map-toggle');
-    const mapBody = document.getElementById('map-sticky-body');
-
     if (mapToggle && mapWrapper) {
       mapToggle.addEventListener('click', () => {
         const isCollapsed = mapWrapper.classList.toggle('collapsed');
-        // Invalidate map size when expanding
         if (!isCollapsed && map) {
           setTimeout(() => map.invalidateSize(), 350);
         }
       });
     }
 
-    // Attach event listeners for "Bekijk op kaart" links
+    // "Bekijk op kaart" links
     document.querySelectorAll('.view-on-map').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -165,32 +167,39 @@ function renderTrip(trip) {
         const lng = parseFloat(e.currentTarget.dataset.lng);
         const name = e.currentTarget.dataset.name;
 
-        // Expand map if collapsed
         if (mapWrapper && mapWrapper.classList.contains('collapsed')) {
           mapWrapper.classList.remove('collapsed');
-          if (map) {
-            setTimeout(() => map.invalidateSize(), 350);
-          }
+          if (map) setTimeout(() => map.invalidateSize(), 350);
         }
 
-        // Scroll to map
         document.getElementById('map-sticky-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // Open popup
         if (map) {
           setTimeout(() => {
             map.setView([lat, lng], 17, { animate: true });
             const marker = currentMarkers.find(m => m.options.title === name);
-            if (marker) {
-              setTimeout(() => marker.openPopup(), 500);
-            }
+            if (marker) setTimeout(() => marker.openPopup(), 500);
           }, 400);
         }
       });
     });
 
+    // --- Attach interactive feature listeners ---
+    attachHeartListeners(contentContainer, trip.id);
+    attachNoteListeners(contentContainer, trip.id);
+    attachRankListeners(contentContainer, trip.id, trip);
+
     // Initialize map
     initMap(trip);
+
+    // Render FAB button
+    renderAddPlaceFAB(trip.id, trip.categories, trip.mapCenter);
+
+    // Subscribe to Firestore for real-time updates
+    subscribeToTrip(trip.id, (data) => {
+      updateAllInteractiveUI(trip);
+      renderUserAddedPlaces(trip);
+    });
 
     // Fade in
     requestAnimationFrame(() => {
@@ -199,21 +208,209 @@ function renderTrip(trip) {
   }, 200);
 }
 
-function createCategoryHTML(category) {
-  const placesHTML = category.places.map(place => {
-    return `
-      <article class="place-card ${place.isWildcard ? 'place-card-wildcard' : ''}" data-type="${category.type}">
-        ${place.image ? `
-        <div class="place-image-wrapper">
-          <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy" onerror="this.outerHTML='<div class=\\'place-image-fallback\\'>${place.name.charAt(0)}</div>'">
-        </div>
-        ` : ''}
-        <div class="place-content">
-          <div class="place-header">
-            <h3 class="place-name">
-              ${place.isWildcard ? '<i data-lucide="star" class="wildcard-icon"></i> ' : ''}
-              ${place.name}
-            </h3>
+// --- Update all interactive UI from Firestore cache ---
+function updateAllInteractiveUI(trip) {
+  // Static places
+  trip.categories.forEach(category => {
+    category.places.forEach(place => {
+      const slug = placeSlug(place.name);
+      updateHeartUI(slug);
+      updateNoteUI(slug);
+      updateRankUI(slug);
+    });
+  });
+  // User-added places
+  getUserAddedPlaces().forEach(place => {
+    updateHeartUI(place.slug);
+    updateNoteUI(place.slug);
+    updateRankUI(place.slug);
+  });
+}
+
+// --- Render user-added places from Firestore ---
+function renderUserAddedPlaces(trip) {
+  const userPlaces = getUserAddedPlaces();
+
+  // Track which user-added slugs are in cache
+  const cacheSlugs = new Set(userPlaces.map(p => p.slug));
+
+  // Remove cards for deleted user-added places
+  document.querySelectorAll('.place-card[data-user-added]').forEach(card => {
+    if (!cacheSlugs.has(card.dataset.placeSlug)) {
+      removeMarkerByName(card.querySelector('.place-name')?.textContent?.trim());
+      card.remove();
+    }
+  });
+
+  userPlaces.forEach(place => {
+    const slug = place.slug;
+    const categoryType = place.categoryType;
+
+    // Skip if already rendered
+    if (document.querySelector(`.place-card[data-place-slug="${slug}"]`)) return;
+
+    // Find the correct category section
+    const section = document.querySelector(`.category-section[data-type="${categoryType}"]`);
+    if (!section) return;
+
+    const inner = section.querySelector('.category-places-inner');
+    if (!inner) return;
+
+    // Find category metadata
+    const category = trip.categories.find(c => c.type === categoryType);
+    if (!category) return;
+
+    // Create card
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = createPlaceCardHTML(place, category, true);
+    const card = wrapper.firstElementChild;
+    inner.appendChild(card);
+
+    if (window.lucide) {
+      window.lucide.createIcons({ root: card });
+    }
+
+    // Attach interactive listeners
+    attachHeartListeners(card, trip.id);
+    attachNoteListeners(card, trip.id);
+    attachRankListeners(card, trip.id, trip);
+
+    // Attach delete button
+    const deleteBtn = card.querySelector('.delete-place-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Weet je zeker dat je deze plek wilt verwijderen?')) return;
+        removeMarkerByName(place.name);
+        card.remove();
+        await deleteUserPlace(trip.id, slug);
+      });
+    }
+
+    // Attach "view on map" link
+    card.querySelectorAll('.view-on-map').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lat = parseFloat(e.currentTarget.dataset.lat);
+        const lng = parseFloat(e.currentTarget.dataset.lng);
+        const name = e.currentTarget.dataset.name;
+
+        const mapWrapper = document.getElementById('map-sticky-wrapper');
+        if (mapWrapper?.classList.contains('collapsed')) {
+          mapWrapper.classList.remove('collapsed');
+          if (map) setTimeout(() => map.invalidateSize(), 350);
+        }
+
+        mapWrapper?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (map) {
+          setTimeout(() => {
+            map.setView([lat, lng], 17, { animate: true });
+            const marker = currentMarkers.find(m => m.options.title === name);
+            if (marker) setTimeout(() => marker.openPopup(), 500);
+          }, 400);
+        }
+      });
+    });
+
+    // Add map marker
+    addDynamicMarker(place, category);
+
+    // Update category count
+    const countEl = section.querySelector('.category-count');
+    if (countEl) {
+      const staticCount = category.places.length;
+      const dynamicCount = section.querySelectorAll('.place-card[data-user-added]').length;
+      countEl.textContent = staticCount + dynamicCount;
+    }
+  });
+}
+
+// --- Dynamic map markers ---
+function addDynamicMarker(place, category) {
+  if (!map) return;
+
+  // Don't add duplicate
+  if (currentMarkers.find(m => m.options.title === place.name)) return;
+
+  const markerHtml = `
+    <div class="custom-marker marker-${category.type}">
+      <div class="custom-marker-inner">
+        <i data-lucide="${category.icon}"></i>
+      </div>
+    </div>
+  `;
+
+  const customIcon = L.divIcon({
+    className: 'custom-div-icon',
+    html: markerHtml,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  const popupHtml = `
+    <div class="popup-content">
+      <div class="popup-name">${place.name}</div>
+      <div class="popup-category" style="color: ${category.color}">
+        <i data-lucide="${category.icon}" style="width: 12px; height: 12px"></i>
+        ${category.label}
+      </div>
+    </div>
+  `;
+
+  const marker = L.marker(place.coords, {
+    icon: customIcon,
+    title: place.name
+  });
+
+  marker.bindPopup(popupHtml).on('popupopen', (e) => {
+    if (window.lucide) {
+      window.lucide.createIcons({ root: e.popup._contentNode });
+    }
+  });
+
+  marker.addTo(map);
+  currentMarkers.push(marker);
+
+  if (window.lucide) {
+    window.lucide.createIcons({ root: document.getElementById('leaflet-map') });
+  }
+}
+
+function removeMarkerByName(name) {
+  if (!name) return;
+  const idx = currentMarkers.findIndex(m => m.options.title === name);
+  if (idx !== -1) {
+    currentMarkers[idx].remove();
+    currentMarkers.splice(idx, 1);
+  }
+}
+
+function createPlaceCardHTML(place, category, isUserAdded = false) {
+  const slug = placeSlug(place.name);
+  const tags = place.tags || [];
+  const reviews = place.reviews || [];
+
+  return `
+    <article class="place-card ${place.isWildcard ? 'place-card-wildcard' : ''}" data-type="${category.type}" data-place-slug="${slug}" ${isUserAdded ? 'data-user-added="true"' : ''}>
+      ${isUserAdded ? `
+      <button class="delete-place-btn" data-slug="${slug}" aria-label="Verwijder plek">
+        <i data-lucide="trash-2"></i>
+      </button>
+      ` : ''}
+      ${place.image ? `
+      <div class="place-image-wrapper">
+        <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy" onerror="this.outerHTML='<div class=\\'place-image-fallback\\'>${place.name.charAt(0)}</div>'">
+      </div>
+      ` : ''}
+      <div class="place-content">
+        <div class="place-header">
+          <h3 class="place-name">
+            ${place.isWildcard ? '<i data-lucide="star" class="wildcard-icon"></i> ' : ''}
+            ${place.name}
+          </h3>
+          <div class="place-header-right">
+            ${heartHTML(place)}
             ${place.priceLevel ? `
             <div class="place-price" title="Prijsniveau: ${place.priceLevel} / 3">
                <span class="place-price-symbol ${place.priceLevel >= 1 ? 'place-price-symbol--active' : ''}">€</span>
@@ -222,64 +419,73 @@ function createCategoryHTML(category) {
             </div>
             ` : ''}
           </div>
-          ${place.rating ? `
-          <div class="place-rating" title="Google Maps: ${place.rating} / 5">
-            <i data-lucide="star" class="place-rating-star"></i>
-            <span class="place-rating-value">${place.rating}</span>
-          </div>
-          ` : ''}
-          <p class="place-description">${place.description}</p>
-          
-          <div class="place-address">
-            <i data-lucide="map-pin" class="place-address-icon"></i>
-            <span>${place.address}</span>
-          </div>
-
-          ${place.openingHours ? `
-          <div class="place-hours">
-            <i data-lucide="clock"></i>
-            <span>${place.openingHours}</span>
-          </div>
-          ` : ''}
-          
-          <div class="place-tags">
-            ${place.tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
-          </div>
-
-          ${place.reviews && place.reviews.length > 0 ? `
-          <details class="place-reviews-accordion">
-            <summary class="reviews-summary"><i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Bekijk ${place.reviews.length} reviews</summary>
-            <div class="reviews-content">
-              ${place.reviews.map(r => `
-                <div class="review-item">
-                  <p class="review-text">"${r.text}"</p>
-                  <span class="review-author">— ${r.author}</span>
-                </div>
-              `).join('')}
-            </div>
-          </details>
-          ` : ''}
-
-          <div class="place-actions">
-            ${place.link ? `
-              <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
-                <i data-lucide="external-link"></i> Website
-              </a>
-            ` : ''}
-            <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
-              <i data-lucide="navigation"></i> Bekijk op kaart
-            </a>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${place.coords[0]},${place.coords[1]}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
-              <i data-lucide="route"></i> Route
-            </a>
-          </div>
         </div>
-      </article>
-    `;
-  }).join('');
+        ${place.rating ? `
+        <div class="place-rating" title="Google Maps: ${place.rating} / 5">
+          <i data-lucide="star" class="place-rating-star"></i>
+          <span class="place-rating-value">${place.rating}</span>
+        </div>
+        ` : ''}
+        <p class="place-description">${place.description || ''}</p>
+
+        <div class="place-address">
+          <i data-lucide="map-pin" class="place-address-icon"></i>
+          <span>${place.address}</span>
+        </div>
+
+        ${place.openingHours ? `
+        <div class="place-hours">
+          <i data-lucide="clock"></i>
+          <span>${place.openingHours}</span>
+        </div>
+        ` : ''}
+
+        ${tags.length > 0 ? `
+        <div class="place-tags">
+          ${tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
+        </div>
+        ` : ''}
+
+        ${reviews.length > 0 ? `
+        <details class="place-reviews-accordion">
+          <summary class="reviews-summary"><i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Bekijk ${reviews.length} reviews</summary>
+          <div class="reviews-content">
+            ${reviews.map(r => `
+              <div class="review-item">
+                <p class="review-text">"${r.text}"</p>
+                <span class="review-author">— ${r.author}</span>
+              </div>
+            `).join('')}
+          </div>
+        </details>
+        ` : ''}
+
+        ${noteHTML(place)}
+        ${rankHTML(place)}
+
+        <div class="place-actions">
+          ${place.link ? `
+            <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
+              <i data-lucide="external-link"></i> Website
+            </a>
+          ` : ''}
+          <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
+            <i data-lucide="navigation"></i> Bekijk op kaart
+          </a>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${place.coords[0]},${place.coords[1]}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
+            <i data-lucide="route"></i> Route
+          </a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function createCategoryHTML(category) {
+  const placesHTML = category.places.map(place => createPlaceCardHTML(place, category, false)).join('');
 
   return `
-    <section class="category-section open">
+    <section class="category-section open" data-type="${category.type}">
       <div class="category-header">
         <div class="category-header-left">
           <div class="category-icon-wrap" style="color: ${category.color}">
@@ -305,21 +511,18 @@ function initMap(trip) {
   const mapEl = document.getElementById('leaflet-map');
   if (!mapEl) return;
 
-  // Cleanup old map if exists
   if (map) {
     map.remove();
     currentMarkers = [];
   }
 
-  // Init map with Positron (Light/Warm) theme for Japandi look
   map = L.map('leaflet-map', {
-    zoomControl: false, // We reposition it
-    scrollWheelZoom: false, // Prevent accidental scrolling while reading
-    dragging: !L.Browser.mobile, // Disable 1-finger drag on mobile
-    tap: false // Disable tap handler to prevent touch issues
+    zoomControl: false,
+    scrollWheelZoom: false,
+    dragging: !L.Browser.mobile,
+    tap: false
   }).setView(trip.mapCenter, trip.mapZoom);
 
-  // Two-finger gesture handling for mobile
   if (L.Browser.mobile) {
     setupTwoFingerGesture(mapEl, map);
   }
@@ -332,12 +535,10 @@ function initMap(trip) {
     maxZoom: 20
   }).addTo(map);
 
-  // Group for bounds
   const group = L.featureGroup();
 
   trip.categories.forEach(category => {
     category.places.forEach(place => {
-      // Create custom marker with Lucide icon
       const markerHtml = `
         <div class="custom-marker marker-${category.type}">
           <div class="custom-marker-inner">
@@ -366,15 +567,12 @@ function initMap(trip) {
 
       const marker = L.marker(place.coords, {
         icon: customIcon,
-        title: place.name // For later querying
+        title: place.name
       });
 
-      // Initialize lucide icons in popup when it opens
       marker.bindPopup(popupHtml).on('popupopen', (e) => {
         if (window.lucide) {
-          window.lucide.createIcons({
-            root: e.popup._contentNode
-          });
+          window.lucide.createIcons({ root: e.popup._contentNode });
         }
       });
 
@@ -385,14 +583,10 @@ function initMap(trip) {
 
   group.addTo(map);
 
-  // Re-create icons for the markers that were just added to the DOM
   if (window.lucide) {
-    window.lucide.createIcons({
-      root: document.getElementById('leaflet-map')
-    });
+    window.lucide.createIcons({ root: document.getElementById('leaflet-map') });
   }
 
-  // Fit bounds if there are markers
   if (currentMarkers.length > 0) {
     map.fitBounds(group.getBounds().pad(0.1));
   }
@@ -400,7 +594,6 @@ function initMap(trip) {
 
 // --- Two-finger gesture handling for mobile ---
 function setupTwoFingerGesture(mapEl, mapInstance) {
-  // Create overlay hint
   const overlay = document.createElement('div');
   overlay.className = 'map-gesture-overlay';
   overlay.textContent = 'Gebruik twee vingers om de kaart te bewegen';
@@ -410,12 +603,10 @@ function setupTwoFingerGesture(mapEl, mapInstance) {
 
   mapEl.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
-      // Show hint on single finger touch
       overlay.classList.add('visible');
       clearTimeout(hideTimeout);
       hideTimeout = setTimeout(() => overlay.classList.remove('visible'), 1500);
     } else if (e.touches.length >= 2) {
-      // Enable dragging for two-finger gesture
       overlay.classList.remove('visible');
       clearTimeout(hideTimeout);
       mapInstance.dragging.enable();
@@ -424,7 +615,6 @@ function setupTwoFingerGesture(mapEl, mapInstance) {
 
   mapEl.addEventListener('touchend', (e) => {
     if (e.touches.length < 2) {
-      // Disable dragging when less than 2 fingers
       setTimeout(() => mapInstance.dragging.disable(), 50);
     }
   }, { passive: true });

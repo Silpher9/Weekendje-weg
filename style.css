@@ -32,6 +32,12 @@
   --color-culture: #8BAA99;
   /* Matcha / Sage Green */
 
+  /* Category Section Backgrounds - Subtle tints */
+  --bg-hotel: #F5F0EB;
+  --bg-cocktail: #F7EEEE;
+  --bg-restaurant: #F6F0E6;
+  --bg-culture: #EDF2EF;
+
   /* Accents */
   --accent-primary: #BCA38F;
   --shadow-soft: 0 4px 20px rgba(44, 42, 41, 0.04);
@@ -307,6 +313,41 @@ body {
   }
 }
 
+/* Category Section Tinted Backgrounds */
+.category-section[data-type] {
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-md);
+  padding: var(--space-xs) var(--space-lg) var(--space-lg);
+}
+
+/* Hotel: small house/roof motifs in diagonal half-drop grid */
+.category-section[data-type="hotel"] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%23A68A73' stroke-width='0.8' fill='none' opacity='0.13' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 16l5-5 5 5v6H8z'/%3E%3Cpath d='M11 22v-4h4v4'/%3E%3Cpath d='M38 46l5-5 5 5v6h-10z'/%3E%3Cpath d='M41 52v-4h4v4'/%3E%3C/g%3E%3C/svg%3E") repeat,
+    var(--bg-hotel);
+}
+
+/* Cocktail: martini glass motifs in diagonal half-drop grid */
+.category-section[data-type="cocktail"] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg stroke='%23D4A3A3' stroke-width='0.8' fill='none' opacity='0.15' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l6 7 6-7'/%3E%3Cline x1='11' y1='15' x2='11' y2='21'/%3E%3Cline x1='8' y1='21' x2='14' y2='21'/%3E%3Cpath d='M33 36l6 7 6-7'/%3E%3Cline x1='39' y1='43' x2='39' y2='49'/%3E%3Cline x1='36' y1='49' x2='42' y2='49'/%3E%3C/g%3E%3C/svg%3E") repeat,
+    var(--bg-cocktail);
+}
+
+/* Restaurant: fork+knife motifs in diagonal half-drop grid */
+.category-section[data-type="restaurant"] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='58'%3E%3Cg stroke='%23D19C5B' stroke-width='0.8' fill='none' opacity='0.12' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 8v5a3 3 0 0 0 3 3v6'/%3E%3Cline x1='8' y1='11' x2='11' y2='11'/%3E%3Cpath d='M15 8v14'/%3E%3Cpath d='M15 8c0 3-1.5 5-1.5 8'/%3E%3Cpath d='M37 37v5a3 3 0 0 0 3 3v6'/%3E%3Cline x1='37' y1='40' x2='40' y2='40'/%3E%3Cpath d='M44 37v14'/%3E%3Cpath d='M44 37c0 3-1.5 5-1.5 8'/%3E%3C/g%3E%3C/svg%3E") repeat,
+    var(--bg-restaurant);
+}
+
+/* Culture: ticket motifs in diagonal half-drop grid */
+.category-section[data-type="culture"] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='58'%3E%3Cg stroke='%238BAA99' stroke-width='0.8' fill='none' opacity='0.13' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='9' width='14' height='9' rx='1.5'/%3E%3Cline x1='12' y1='9' x2='12' y2='18'/%3E%3Ccircle cx='9' cy='13.5' r='1.2'/%3E%3Crect x='34' y='38' width='14' height='9' rx='1.5'/%3E%3Cline x1='41' y1='38' x2='41' y2='47'/%3E%3Ccircle cx='38' cy='42.5' r='1.2'/%3E%3C/g%3E%3C/svg%3E") repeat,
+    var(--bg-culture);
+}
+
 .category-header {
   display: flex;
   align-items: center;
@@ -333,6 +374,23 @@ body {
   background: var(--bg-card);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   border: 1px solid var(--border-subtle);
+}
+
+/* Tinted icon wraps per category */
+.category-section[data-type="hotel"] .category-icon-wrap {
+  background: #EDE5DC;
+}
+
+.category-section[data-type="cocktail"] .category-icon-wrap {
+  background: #F0DEDE;
+}
+
+.category-section[data-type="restaurant"] .category-icon-wrap {
+  background: #EFE5D4;
+}
+
+.category-section[data-type="culture"] .category-icon-wrap {
+  background: #DDE8E1;
 }
 
 .category-label {
@@ -996,6 +1054,828 @@ body {
   height: var(--space-3xl);
 }
 
+/* ============================================================
+   INTERACTIVE FEATURES — User Picker, Hearts, Notes, Ranking
+   ============================================================ */
+
+/* --- User Picker Modal --- */
+.user-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(44, 42, 41, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.user-picker-overlay.visible {
+  opacity: 1;
+}
+
+.user-picker-modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl) var(--space-xl);
+  box-shadow: var(--shadow-hover);
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.user-picker-overlay.visible .user-picker-modal {
+  transform: translateY(0);
+}
+
+.user-picker-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+.user-picker-buttons {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.user-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-subtle);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 110px;
+}
+
+.user-picker-btn:hover,
+.user-picker-btn:active {
+  border-color: var(--accent-primary);
+  background: var(--bg-card);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.user-picker-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+/* --- User Avatar (shared between picker and badges) --- */
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: white;
+  background: var(--accent-primary);
+}
+
+.user-avatar--large {
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+}
+
+/* --- Current User Badge (top bar) --- */
+.current-user-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  margin-left: var(--space-sm);
+  vertical-align: middle;
+}
+
+/* --- Hearts / Likes --- */
+.place-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.place-hearts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.heart-btn:hover {
+  color: var(--color-cocktail);
+  background: rgba(212, 163, 163, 0.1);
+}
+
+.heart-btn:active {
+  transform: scale(0.9);
+}
+
+.heart-btn--active {
+  color: var(--color-cocktail);
+}
+
+.heart-btn--active .heart-icon {
+  fill: var(--color-cocktail);
+  stroke: var(--color-cocktail);
+}
+
+.heart-icon {
+  transition: all var(--transition-fast);
+}
+
+.heart-indicators {
+  display: flex;
+  gap: 3px;
+}
+
+.heart-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.heart-avatar--liked {
+  background: var(--color-cocktail);
+  color: white;
+  border-color: var(--color-cocktail);
+}
+
+/* --- Notes --- */
+.place-notes {
+  margin-top: var(--space-md);
+}
+
+.note-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-focus);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.note-add-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
+  background: var(--bg-secondary);
+}
+
+.note-display {
+  background: #FDF8F0;
+  border: 1px solid #F0E6D6;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.note-display-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.note-icon {
+  flex-shrink: 0;
+  color: var(--color-restaurant);
+  margin-top: 2px;
+}
+
+.note-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.note-edit-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.note-edit-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.note-editor {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.note-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-focus);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  resize: vertical;
+  min-height: 48px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.note-textarea:focus {
+  border-color: var(--accent-primary);
+}
+
+.note-editor-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+.note-cancel-btn,
+.note-save-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.note-cancel-btn {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.note-cancel-btn:hover {
+  background: var(--bg-secondary);
+}
+
+.note-save-btn {
+  border: none;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.note-save-btn:hover {
+  opacity: 0.85;
+}
+
+/* --- Ranking / Top 3 --- */
+.place-rank-area {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #FDF8F0, #F7F1E8);
+  border: 1px solid #F0E6D6;
+  border-radius: var(--radius-sm);
+}
+
+.rank-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+.rank-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rank-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-focus);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rank-option:hover {
+  border-color: #D4A035;
+  color: #D4A035;
+  background: #FDF8F0;
+}
+
+.rank-option--active {
+  background: #D4A035;
+  border-color: #D4A035;
+  color: white;
+  box-shadow: 0 2px 8px rgba(212, 160, 53, 0.3);
+}
+
+.rank-badge-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.rank-badge--gold {
+  background: linear-gradient(135deg, #D4A035, #E8C068);
+}
+
+.rank-badge--silver {
+  background: linear-gradient(135deg, #8A8580, #A8A29E);
+}
+
+.rank-badge--bronze {
+  background: linear-gradient(135deg, #A68A73, #C4A88E);
+}
+
+/* Ranked card visual treatment */
+.place-card--ranked {
+  border-color: rgba(212, 160, 53, 0.3);
+  box-shadow: 0 4px 20px rgba(212, 160, 53, 0.1);
+}
+
+.place-card--rank-1 {
+  border-color: rgba(212, 160, 53, 0.4);
+  box-shadow: 0 4px 20px rgba(212, 160, 53, 0.15);
+}
+
+/* ============================================================
+   ADD PLACE — FAB, Modal, Delete button
+   ============================================================ */
+
+/* --- FAB Button --- */
+.add-place-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  box-shadow: 0 4px 16px rgba(44, 42, 41, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.add-place-fab:hover,
+.add-place-fab:active {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(44, 42, 41, 0.25);
+}
+
+.add-place-fab .lucide {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+/* --- Add Place Modal (bottom sheet) --- */
+.add-place-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Backdrop blur on pseudo-element to avoid creating a containing block
+   that traps the PlaceAutocompleteElement's fixed-position dropdown */
+.add-place-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 42, 41, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: -1;
+}
+
+.add-place-overlay.visible {
+  opacity: 1;
+}
+
+.add-place-modal {
+  background: var(--bg-card);
+  border-radius: 20px 20px 0 0;
+  margin-top: auto;
+  max-height: 90vh;
+  overflow: visible;
+  padding: 24px 20px 32px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.add-place-overlay.visible .add-place-modal {
+  transform: translateY(0);
+}
+
+.add-place-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.add-place-modal-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.add-place-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-place-close-btn:hover {
+  background: var(--bg-primary);
+}
+
+/* --- Search Input / PlaceAutocompleteElement --- */
+.add-place-search-wrapper {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.add-place-search-wrapper gmp-place-autocomplete {
+  width: 100%;
+  --gmpx-color-surface: var(--bg-primary);
+  --gmpx-color-on-surface: var(--text-primary);
+  --gmpx-color-on-surface-variant: var(--text-secondary);
+  --gmpx-color-primary: var(--text-primary);
+  --gmpx-font-family-base: var(--font-body);
+  --gmpx-font-size-base: 1rem;
+}
+
+.add-place-search {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.add-place-search:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+.add-place-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0 4px;
+}
+
+/* --- Field Labels --- */
+.add-place-field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.add-place-optional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* --- Category Pills --- */
+.add-place-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.add-place-category-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  border: 2px solid var(--border-subtle);
+  background: var(--bg-primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.add-place-category-pill:hover {
+  border-color: var(--pill-color);
+  color: var(--pill-color);
+}
+
+.add-place-category-pill.selected {
+  border-color: var(--pill-color);
+  background: var(--pill-color);
+  color: white;
+}
+
+.add-place-category-pill .lucide {
+  width: 14px;
+  height: 14px;
+}
+
+/* --- Preview Card --- */
+.add-place-preview {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.add-place-preview-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.add-place-preview-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+}
+
+.add-place-preview-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.add-place-preview-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.add-place-preview-rating .lucide {
+  color: #D4A035;
+  fill: #D4A035;
+}
+
+.add-place-preview-price {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+/* --- Description Textarea --- */
+.add-place-description {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  resize: vertical;
+  min-height: 60px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.add-place-description:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+/* --- Action Buttons --- */
+.add-place-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.add-place-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 18px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
+  background: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-place-back-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.add-place-back-btn .lucide {
+  width: 16px;
+  height: 16px;
+}
+
+.add-place-confirm-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-place-confirm-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.add-place-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Delete Button on User-Added Cards --- */
+.place-card {
+  position: relative;
+}
+
+.delete-place-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(44, 42, 41, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.delete-place-btn .lucide {
+  width: 14px;
+  height: 14px;
+}
+
+.delete-place-btn:hover {
+  background: rgba(180, 60, 60, 0.8);
+}
+
+.place-card[data-user-added]:hover .delete-place-btn,
+.place-card[data-user-added] .delete-place-btn:focus {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .place-card[data-user-added] .delete-place-btn {
+    opacity: 0.7;
+  }
+}
+
+/* --- Google PlaceAutocomplete Styling --- */
+.add-place-overlay gmp-place-autocomplete {
+  --gmpx-border-radius: 12px;
+}
+
+/* Legacy Google Places dropdown (if still used) — must be above modal overlay */
+.pac-container {
+  z-index: 99999 !important;
+}
+
 /* --- Responsive --- */
 @media (min-width: 601px) {
 
@@ -1003,5 +1883,12 @@ body {
   .top-bar-inner,
   #trip-content {
     max-width: 600px;
+  }
+
+  .add-place-modal {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px 20px 0 0;
   }
 }
