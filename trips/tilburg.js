@@ -10,9 +10,9 @@ export default {
     categories: [
         {
             type: 'hotel',
-            icon: '🏨',
+            icon: 'bed-double',
             label: 'Hotels',
-            color: '#7C3AED',
+            color: '#A68A73', // Zacht terracotta/beige
             places: [
                 {
                     name: 'Hotel Central Tilburg',
@@ -42,9 +42,9 @@ export default {
         },
         {
             type: 'cocktail',
-            icon: '🍸',
+            icon: 'martini',
             label: 'Cocktailbars',
-            color: '#EC4899',
+            color: '#D4A3A3', // Gedempt roze
             places: [
                 {
                     name: 'Studio',
@@ -82,9 +82,9 @@ export default {
         },
         {
             type: 'restaurant',
-            icon: '🍽️',
+            icon: 'utensils',
             label: 'Restaurants',
-            color: '#F59E0B',
+            color: '#D19C5B', // Warm oker/karamel
             places: [
                 {
                     name: 'Eetbar De Wagon',
@@ -122,9 +122,9 @@ export default {
         },
         {
             type: 'culture',
-            icon: '🎬',
+            icon: 'ticket',
             label: 'Cultuur',
-            color: '#14B8A6',
+            color: '#8BAA99', // Matcha / Saliegroen
             places: [
                 {
                     name: 'Cinecitta',

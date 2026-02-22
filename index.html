@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="description" content="Weekendje Weg – Ontdek de leukste plekken voor een weekendje weg met Damon & Marcia" />
-  <title>Weekendje Weg ✈️</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Weekendje Weg</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Custom Style -->
   <link rel="stylesheet" href="/style.css" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Meta Theme Color -->
+  <meta name="theme-color" content="#F7F5F0" />
 </head>
+
 <body>
-  <div id="app">
-    <!-- Top Bar -->
-    <header id="top-bar">
-      <div class="top-bar-inner">
-        <span class="logo">✈️ Weekendje Weg</span>
-        <span class="subtitle">Damon & Marcia</span>
+  <!-- Top App Bar -->
+  <header id="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">
+        <i data-lucide="plane"></i>
+        Weekendje Weg
       </div>
-    </header>
+      <div class="subtitle">Personal Travel Log</div>
+    </div>
+  </header>
 
-    <!-- Trip Tabs -->
-    <nav id="trip-tabs" role="tablist">
-      <!-- Filled dynamically -->
-    </nav>
+  <!-- Trip Navigation Tabs -->
+  <nav id="trip-tabs" aria-label="Trip selectie"></nav>
 
-    <!-- Trip Content -->
-    <main id="trip-content">
-      <!-- Filled dynamically -->
-    </main>
-  </div>
+  <!-- Main Content Area -->
+  <main id="trip-content">
+    <!-- Loading / Empty State -->
+    <div class="empty-state">
+      <i data-lucide="map" class="empty-state-emoji"></i>
+      <h2 class="empty-state-text">Selecteer een trip om te beginnen!</h2>
+    </div>
+  </main>
 
+  <!-- App Logic -->
   <script type="module" src="/main.js"></script>
 </body>
+
 </html>

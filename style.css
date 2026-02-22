@@ -1,31 +1,41 @@
 /* ============================================================
-   WEEKENDJE WEG — Design System & Styles
+   WEEKENDJE WEG — Design System & Styles (Japandi Theme)
    ============================================================ */
 
 /* --- CSS Custom Properties --- */
 :root {
-  /* Background & Surface */
-  --bg-primary: #0F0F14;
-  --bg-secondary: #16161D;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-hover: rgba(255, 255, 255, 0.07);
-  --bg-glass: rgba(255, 255, 255, 0.06);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  /* Background & Surface - Warm, light, earthy */
+  --bg-primary: #F7F5F0;
+  /* Warm Off-white */
+  --bg-secondary: #EAE6DF;
+  /* Soft Beige */
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FCFAF8;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --border-subtle: rgba(44, 42, 41, 0.08);
+  --border-focus: rgba(44, 42, 41, 0.2);
 
-  /* Text */
-  --text-primary: #F0F0F5;
-  --text-secondary: #9A9AB0;
-  --text-muted: #5A5A72;
+  /* Text - Softer than black */
+  --text-primary: #2C2A29;
+  /* Dark Anthracite/Coffee */
+  --text-secondary: #6B6661;
+  /* Muted Taupe */
+  --text-muted: #948C84;
 
-  /* Category Colors */
-  --color-hotel: #7C3AED;
-  --color-cocktail: #EC4899;
-  --color-restaurant: #F59E0B;
-  --color-culture: #14B8A6;
+  /* Category Colors - Earthy & Washed */
+  --color-hotel: #A68A73;
+  /* Soft Terracotta */
+  --color-cocktail: #D4A3A3;
+  /* Muted Rose */
+  --color-restaurant: #D19C5B;
+  /* Warm Ocher */
+  --color-culture: #8BAA99;
+  /* Matcha / Sage Green */
 
   /* Accents */
-  --accent-gradient: linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F59E0B 100%);
-  --accent-glow: rgba(124, 58, 237, 0.3);
+  --accent-primary: #BCA38F;
+  --shadow-soft: 0 4px 20px rgba(44, 42, 41, 0.04);
+  --shadow-hover: 0 8px 32px rgba(44, 42, 41, 0.08);
 
   /* Spacing */
   --space-xs: 4px;
@@ -34,8 +44,9 @@
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --space-3xl: 64px;
 
-  /* Radius */
+  /* Radius - Organic but structured */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
@@ -78,15 +89,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Lucide Icon styling */
+.lucide {
+  width: 1.2em;
+  height: 1.2em;
+  stroke-width: 1.75;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* --- Top Bar --- */
 #top-bar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 15, 20, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-glass);
+  background: rgba(247, 245, 240, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .top-bar-inner {
@@ -100,17 +120,17 @@ body {
 
 .logo {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 1.15rem;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .subtitle {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 400;
   letter-spacing: 0.03em;
 }
@@ -118,15 +138,15 @@ body {
 /* --- Trip Tabs --- */
 #trip-tabs {
   position: sticky;
-  top: 53px;
+  top: 57px;
   z-index: 99;
-  background: rgba(15, 15, 20, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-glass);
+  background: rgba(247, 245, 240, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   overflow-x: auto;
   scrollbar-width: none;
   max-width: 600px;
@@ -139,46 +159,53 @@ body {
 
 .trip-tab {
   flex-shrink: 0;
-  padding: var(--space-sm) var(--space-md);
+  padding: 8px 18px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-glass);
-  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .trip-tab:hover {
-  background: var(--bg-card-hover);
+  background: var(--bg-card);
+  border-color: var(--border-focus);
   color: var(--text-primary);
 }
 
 .trip-tab.active {
-  background: var(--accent-gradient);
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border-color: transparent;
-  box-shadow: 0 4px 20px var(--accent-glow);
+  box-shadow: 0 4px 12px rgba(44, 42, 41, 0.15);
 }
 
 /* --- Main Content --- */
 #trip-content {
   max-width: 600px;
   margin: 0 auto;
-  padding-bottom: var(--space-2xl);
+  padding-bottom: var(--space-3xl);
 }
 
 /* --- Hero Banner --- */
 .hero {
   position: relative;
-  width: 100%;
-  height: 260px;
+  width: calc(100% - var(--space-xl));
+  margin: var(--space-lg) auto 0;
+  height: 280px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: var(--shadow-soft);
 }
 
 .hero-image {
@@ -192,20 +219,19 @@ body {
   position: absolute;
   inset: 0;
   background: linear-gradient(to bottom,
-    rgba(15, 15, 20, 0) 0%,
-    rgba(15, 15, 20, 0.3) 50%,
-    rgba(15, 15, 20, 1) 100%
-  );
+      rgba(44, 42, 41, 0) 20%,
+      rgba(44, 42, 41, 0.15) 60%,
+      rgba(44, 42, 41, 0.6) 100%);
 }
 
 .hero-fallback {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
+  color: var(--text-muted);
 }
 
 .hero-text {
@@ -214,55 +240,67 @@ body {
   left: var(--space-lg);
   right: var(--space-lg);
   z-index: 2;
+  color: #FFFFFF;
 }
 
 .hero-title {
   font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 2.2rem;
+  font-weight: 400;
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
   line-height: 1.1;
   margin-bottom: var(--space-xs);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .hero-subtitle {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
+  font-size: 1rem;
+  opacity: 0.9;
   font-weight: 300;
 }
 
 .hero-dates {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 6px;
   margin-top: var(--space-sm);
-  padding: 4px 12px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-full);
   font-size: 0.8rem;
-  color: var(--text-secondary);
   backdrop-filter: blur(10px);
 }
 
 /* --- Category Section --- */
 .category-section {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-xl);
   padding: 0 var(--space-lg);
-  animation: fadeInUp 0.5s ease forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
 }
 
-.category-section:nth-child(1) { animation-delay: 0.05s; }
-.category-section:nth-child(2) { animation-delay: 0.1s; }
-.category-section:nth-child(3) { animation-delay: 0.15s; }
-.category-section:nth-child(4) { animation-delay: 0.2s; }
+.category-section:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.category-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.category-section:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.category-section:nth-child(4) {
+  animation-delay: 0.2s;
+}
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -282,30 +320,40 @@ body {
 .category-header-left {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
-.category-icon {
-  font-size: 1.3rem;
+.category-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border-subtle);
 }
 
 .category-label {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .category-count {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  background: var(--bg-card);
-  border: 1px solid var(--border-glass);
-  padding: 2px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 10px;
   border-radius: var(--radius-full);
+  margin-left: var(--space-xs);
 }
 
 .category-chevron {
-  font-size: 0.85rem;
   color: var(--text-muted);
   transition: transform var(--transition-base);
 }
@@ -316,7 +364,7 @@ body {
 
 .category-divider {
   height: 1px;
-  background: var(--border-glass);
+  background: var(--border-subtle);
 }
 
 .category-places {
@@ -337,12 +385,13 @@ body {
 /* --- Place Card --- */
 .place-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-lg);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-soft);
 }
 
 .place-card::before {
@@ -350,99 +399,138 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 3px;
+  width: 4px;
   height: 100%;
-  border-radius: 3px 0 0 3px;
-  transition: opacity var(--transition-base);
+  border-radius: 4px 0 0 4px;
+  opacity: 0.8;
 }
 
-.place-card[data-type="hotel"]::before { background: var(--color-hotel); }
-.place-card[data-type="cocktail"]::before { background: var(--color-cocktail); }
-.place-card[data-type="restaurant"]::before { background: var(--color-restaurant); }
-.place-card[data-type="culture"]::before { background: var(--color-culture); }
+.place-card[data-type="hotel"]::before {
+  background: var(--color-hotel);
+}
+
+.place-card[data-type="cocktail"]::before {
+  background: var(--color-cocktail);
+}
+
+.place-card[data-type="restaurant"]::before {
+  background: var(--color-restaurant);
+}
+
+.place-card[data-type="culture"]::before {
+  background: var(--color-culture);
+}
 
 .place-card:hover,
 .place-card:active {
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-focus);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hover);
 }
 
 .place-name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 1.1rem;
   margin-bottom: var(--space-xs);
+  color: var(--text-primary);
 }
 
 .place-description {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.55;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
 .place-address {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   display: flex;
   align-items: flex-start;
   gap: var(--space-xs);
 }
 
-.place-address-icon {
-  flex-shrink: 0;
-  margin-top: 1px;
+.place-address .lucide {
+  color: var(--text-muted);
+  width: 1em;
+  height: 1em;
+  margin-top: 2px;
 }
 
 .place-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
-  margin-top: var(--space-sm);
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 .place-tag {
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  color: var(--text-muted);
-  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
-.place-tag[data-type="hotel"] { color: var(--color-hotel); border-color: rgba(124, 58, 237, 0.2); }
-.place-tag[data-type="cocktail"] { color: var(--color-cocktail); border-color: rgba(236, 72, 153, 0.2); }
-.place-tag[data-type="restaurant"] { color: var(--color-restaurant); border-color: rgba(245, 158, 11, 0.2); }
-.place-tag[data-type="culture"] { color: var(--color-culture); border-color: rgba(20, 184, 166, 0.2); }
+.place-tag[data-type="hotel"] {
+  color: #8A6E59;
+  background: #F2EDE8;
+}
+
+.place-tag[data-type="cocktail"] {
+  color: #B38080;
+  background: #F7EBEB;
+}
+
+.place-tag[data-type="restaurant"] {
+  color: #A67332;
+  background: #F6EFE6;
+}
+
+.place-tag[data-type="culture"] {
+  color: #628271;
+  background: #EAF0EC;
+}
 
 .place-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
-  margin-top: var(--space-sm);
-  font-size: 0.8rem;
+  gap: 6px;
+  margin-top: var(--space-md);
+  font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
 
-.place-link[data-type="hotel"] { color: var(--color-hotel); }
-.place-link[data-type="cocktail"] { color: var(--color-cocktail); }
-.place-link[data-type="restaurant"] { color: var(--color-restaurant); }
-.place-link[data-type="culture"] { color: var(--color-culture); }
+.place-link[data-type="hotel"] {
+  color: var(--color-hotel);
+}
+
+.place-link[data-type="cocktail"] {
+  color: var(--color-cocktail);
+}
+
+.place-link[data-type="restaurant"] {
+  color: var(--color-restaurant);
+}
+
+.place-link[data-type="culture"] {
+  color: var(--color-culture);
+}
 
 .place-link:hover {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 /* --- Map Section --- */
 .map-section {
-  margin-top: var(--space-xl);
+  margin-top: var(--space-2xl);
   padding: 0 var(--space-lg);
-  animation: fadeInUp 0.5s ease 0.25s forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
   opacity: 0;
 }
 
@@ -451,73 +539,80 @@ body {
   align-items: center;
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
+  color: var(--text-primary);
 }
 
 .map-section-title {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
+  font-size: 1.2rem;
 }
 
 .map-container {
   width: 100%;
-  height: 350px;
+  height: 400px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+  background: #EBEAE4;
+  /* Fallback slightly warm gray */
 }
 
-/* Leaflet Overrides */
+/* Light/Warm Leaflet Overrides */
 .leaflet-container {
-  background: var(--bg-secondary) !important;
+  background: #EBEAE4 !important;
   font-family: var(--font-body) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: var(--bg-secondary) !important;
+  background: var(--bg-card) !important;
   color: var(--text-primary) !important;
   border-radius: var(--radius-md) !important;
-  border: 1px solid var(--border-glass) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-hover) !important;
 }
 
 .leaflet-popup-tip {
-  background: var(--bg-secondary) !important;
+  background: var(--bg-card) !important;
 }
 
 .leaflet-popup-content {
-  margin: 10px 14px !important;
+  margin: 12px 16px !important;
   font-size: 0.85rem !important;
   line-height: 1.5 !important;
 }
 
 .leaflet-popup-content .popup-name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 500;
+  font-size: 1rem;
   margin-bottom: 2px;
 }
 
 .leaflet-popup-content .popup-category {
   font-size: 0.75rem;
-  opacity: 0.6;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .leaflet-control-zoom {
-  border: 1px solid var(--border-glass) !important;
+  border: 1px solid var(--border-subtle) !important;
   border-radius: var(--radius-sm) !important;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
 .leaflet-control-zoom a {
-  background: var(--bg-secondary) !important;
+  background: var(--bg-card) !important;
   color: var(--text-primary) !important;
-  border-color: var(--border-glass) !important;
+  border-color: var(--border-subtle) !important;
 }
 
 .leaflet-control-zoom a:hover {
-  background: var(--bg-card-hover) !important;
+  background: var(--bg-secondary) !important;
 }
 
 /* Custom Map Markers */
@@ -525,12 +620,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(44, 42, 41, 0.2);
+  border: 2px solid #FFFFFF;
   transition: transform var(--transition-fast);
 }
 
@@ -540,43 +635,67 @@ body {
 
 .custom-marker-inner {
   transform: rotate(45deg);
-  font-size: 14px;
-  line-height: 1;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.marker-hotel { background: var(--color-hotel); }
-.marker-cocktail { background: var(--color-cocktail); }
-.marker-restaurant { background: var(--color-restaurant); }
-.marker-culture { background: var(--color-culture); }
+.custom-marker-inner .lucide {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.5;
+}
+
+.marker-hotel {
+  background: var(--color-hotel);
+}
+
+.marker-cocktail {
+  background: var(--color-cocktail);
+}
+
+.marker-restaurant {
+  background: var(--color-restaurant);
+}
+
+.marker-culture {
+  background: var(--color-culture);
+}
 
 /* --- Map Legend --- */
 .map-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   margin-top: var(--space-md);
   padding: var(--space-md);
-  background: var(--bg-card);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
+  background: transparent;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
+  gap: 8px;
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.legend-dot-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
 }
 
-/* --- Empty State --- */
+.legend-dot-wrapper .lucide {
+  width: 14px;
+  height: 14px;
+}
+
+/* --- Empty/Loading State --- */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -587,54 +706,31 @@ body {
   padding: var(--space-xl);
 }
 
-.empty-state-emoji {
-  font-size: 4rem;
-  margin-bottom: var(--space-lg);
+.empty-state .lucide {
+  width: 48px;
+  height: 48px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
 }
 
 .empty-state-text {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.3rem;
+  font-weight: 400;
+  font-size: 1.2rem;
   color: var(--text-secondary);
 }
 
 /* --- Footer spacing --- */
 .footer-spacer {
-  height: var(--space-2xl);
-}
-
-/* --- Utilities --- */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  height: var(--space-3xl);
 }
 
 /* --- Responsive --- */
 @media (min-width: 601px) {
+
   #trip-tabs,
   .top-bar-inner,
   #trip-content {
     max-width: 600px;
   }
-}
-
-/* Tile background pattern */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
 }

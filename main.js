@@ -11,22 +11,23 @@ import tilburg from './trips/tilburg.js';
 const trips = [tilburg];
 
 // --- State ---
-let activeTrip = trips[0];
+let currentTrip = trips[0];
 let map = null;
-let mapMarkers = [];
+let currentMarkers = [];
+let tileLayer = null;
 
-// --- Icons per category type ---
-const categoryIcons = {
-    hotel: '🏨',
-    cocktail: '🍸',
-    restaurant: '🍽️',
-    culture: '🎬',
-};
+// --- DOM Elements ---
+const tabsContainer = document.getElementById('trip-tabs');
+const contentContainer = document.getElementById('trip-content');
 
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
-    renderTabs();
-    renderTrip(activeTrip);
+  renderTabs();
+  renderTrip(currentTrip);
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 });
 
 // ============================================================
@@ -34,244 +35,288 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 
 function renderTabs() {
-    const tabsContainer = document.getElementById('trip-tabs');
-    tabsContainer.innerHTML = '';
+  if (!tabsContainer) return;
+  tabsContainer.innerHTML = '';
+  trips.forEach(trip => {
+    const btn = document.createElement('button');
+    btn.className = `trip-tab ${currentTrip?.id === trip.id ? 'active' : ''}`;
+    // Gebruik de map-pin icon voor de tabbladen
+    btn.innerHTML = `<i data-lucide="map-pin" style="width: 14px; height: 14px; stroke-width: 2.5"></i> ${trip.name}`;
+    btn.onclick = () => selectTrip(trip.id);
+    tabsContainer.appendChild(btn);
+  });
 
-    trips.forEach((trip) => {
-        const tab = document.createElement('button');
-        tab.className = `trip-tab${trip.id === activeTrip.id ? ' active' : ''}`;
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-selected', trip.id === activeTrip.id);
-        tab.id = `tab-${trip.id}`;
-        tab.textContent = trip.name;
-
-        tab.addEventListener('click', () => {
-            if (trip.id === activeTrip.id) return;
-            activeTrip = trip;
-            renderTabs();
-            renderTrip(trip);
-        });
-
-        tabsContainer.appendChild(tab);
+  // Render lucide icons in tabs na het toevoegen
+  if (window.lucide) {
+    window.lucide.createIcons({
+      root: tabsContainer,
+      attrs: {
+        'stroke-width': 2.5
+      }
     });
-
-    // "Coming soon" indicator
-    const comingSoon = document.createElement('span');
-    comingSoon.className = 'trip-tab';
-    comingSoon.style.opacity = '0.4';
-    comingSoon.style.cursor = 'default';
-    comingSoon.textContent = '+ Volgende trip';
-    tabsContainer.appendChild(comingSoon);
+  }
 }
 
-// ============================================================
-// TRIP RENDERING
-// ============================================================
+function selectTrip(tripId) {
+  const trip = trips.find(t => t.id === tripId);
+  if (!trip) return;
+
+  currentTrip = trip;
+  renderTabs(); // Update active state
+  renderTrip(trip);
+}
 
 function renderTrip(trip) {
-    const container = document.getElementById('trip-content');
+  // Fade out effect
+  contentContainer.style.opacity = '0';
 
-    // Build HTML
-    let html = '';
-
-    // Hero Banner
-    html += `
-    <div class="hero">
-      ${trip.banner
-            ? `<img class="hero-image" src="${trip.banner}" alt="${trip.name}" />`
-            : `<div class="hero-fallback">🏙️</div>`
-        }
-      <div class="hero-gradient"></div>
-      <div class="hero-text">
-        <h1 class="hero-title">${trip.name}</h1>
-        <p class="hero-subtitle">${trip.subtitle}</p>
-        <span class="hero-dates">📅 ${trip.dates}</span>
+  setTimeout(() => {
+    // 1. Hero Banner
+    const html = `
+      <div class="hero">
+        ${trip.banner
+        ? `<img src="${trip.banner}" alt="${trip.name}" class="hero-image" onerror="this.outerHTML='<div class=\\'hero-fallback\\'>${trip.name.charAt(0)}</div>'"/>`
+        : `<div class="hero-fallback">${trip.name.charAt(0)}</div>`
+      }
+        <div class="hero-gradient"></div>
+        <div class="hero-text">
+          <h1 class="hero-title">${trip.name}</h1>
+          <p class="hero-subtitle">${trip.subtitle}</p>
+          ${trip.dates ? `<div class="hero-dates"><i data-lucide="calendar"></i> ${trip.dates}</div>` : ''}
+        </div>
       </div>
-    </div>
-  `;
 
-    // Categories
-    trip.categories.forEach((cat, idx) => {
-        html += `
-      <section class="category-section open" data-category="${cat.type}" id="cat-${cat.type}">
-        <div class="category-header" onclick="toggleCategory('${cat.type}')">
-          <div class="category-header-left">
-            <span class="category-icon">${cat.icon}</span>
-            <span class="category-label" style="color: ${cat.color}">${cat.label}</span>
-            <span class="category-count">${cat.places.length}</span>
-          </div>
-          <span class="category-chevron">▼</span>
+      <!-- Categories -->
+      ${trip.categories.map(createCategoryHTML).join('')}
+
+      <!-- Map Section -->
+      <div class="map-section">
+        <div class="map-section-header">
+          <i data-lucide="map"></i>
+          <h2 class="map-section-title">Kaart van ${trip.name}</h2>
         </div>
-        <div class="category-divider"></div>
-        <div class="category-places">
-          ${cat.places
-                .map(
-                    (place) => `
-            <article class="place-card" data-type="${cat.type}" id="place-${slugify(place.name)}">
-              <h3 class="place-name">${place.name}</h3>
-              <p class="place-description">${place.description}</p>
-              <p class="place-address">
-                <span class="place-address-icon">📍</span>
-                <span>${place.address}</span>
-              </p>
-              <div class="place-tags">
-                ${place.tags
-                            .map(
-                                (tag) =>
-                                    `<span class="place-tag" data-type="${cat.type}">${tag}</span>`
-                            )
-                            .join('')}
+        <div id="leaflet-map" class="map-container"></div>
+        <div class="map-legend">
+          ${trip.categories.map(cat => `
+            <div class="legend-item">
+              <div class="legend-dot-wrapper" style="background: ${cat.color}20">
+                <i data-lucide="${cat.icon}" style="color: ${cat.color}"></i>
               </div>
-              ${place.link
-                            ? `<a class="place-link" data-type="${cat.type}" href="${place.link}" target="_blank" rel="noopener noreferrer">
-                       Website bezoeken →
-                     </a>`
-                            : ''
-                        }
-            </article>
-          `
-                )
-                .join('')}
+              <span>${cat.label}</span>
+            </div>
+          `).join('')}
         </div>
-      </section>
+      </div>
+      
+      <div class="footer-spacer"></div>
     `;
+
+    contentContainer.innerHTML = html;
+
+    // Render lucide icons in content
+    if (window.lucide) {
+      window.lucide.createIcons({
+        root: contentContainer
+      });
+    }
+
+    // Attach event listeners for accordions
+    document.querySelectorAll('.category-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const section = e.currentTarget.closest('.category-section');
+        section.classList.toggle('open');
+      });
     });
 
-    // Map section
-    html += `
-    <section class="map-section">
-      <div class="map-section-header">
-        <span>🗺️</span>
-        <h2 class="map-section-title">Kaart van ${trip.name}</h2>
-      </div>
-      <div class="map-container" id="map"></div>
-      <div class="map-legend">
-        ${trip.categories
-            .map(
-                (cat) => `
-          <div class="legend-item">
-            <span class="legend-dot" style="background: ${cat.color}"></span>
-            <span>${cat.icon} ${cat.label}</span>
+    // Attach event listeners for "Bekijk op kaart" links
+    document.querySelectorAll('.view-on-map').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lat = parseFloat(e.currentTarget.dataset.lat);
+        const lng = parseFloat(e.currentTarget.dataset.lng);
+        const name = e.currentTarget.dataset.name;
+
+        // Scroll to map
+        document.getElementById('leaflet-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Open popup
+        if (map) {
+          map.setView([lat, lng], 17, { animate: true });
+          const marker = currentMarkers.find(m => m.options.title === name);
+          if (marker) {
+            setTimeout(() => marker.openPopup(), 500); // Wait for pan
+          }
+        }
+      });
+    });
+
+    // Initialize map
+    initMap(trip);
+
+    // Fade in
+    requestAnimationFrame(() => {
+      contentContainer.style.opacity = '1';
+    });
+  }, 200);
+}
+
+function createCategoryHTML(category) {
+  const placesHTML = category.places.map(place => {
+    const slug = slugify(place.name);
+    return `
+      <article class="place-card" data-type="${category.type}">
+        <h3 class="place-name">${place.name}</h3>
+        <p class="place-description">${place.description}</p>
+        
+        <div class="place-address">
+          <i data-lucide="map-pin" class="place-address-icon"></i>
+          <span>${place.address}</span>
+        </div>
+        
+        <div class="place-tags">
+          ${place.tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
+        </div>
+
+        <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+          ${place.link ? `
+            <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
+              <i data-lucide="external-link"></i> Website
+            </a>
+          ` : ''}
+          <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
+            <i data-lucide="navigation"></i> Bekijk op kaart
+          </a>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  return `
+    <section class="category-section open">
+      <div class="category-header">
+        <div class="category-header-left">
+          <div class="category-icon-wrap" style="color: ${category.color}">
+            <i data-lucide="${category.icon}"></i>
           </div>
-        `
-            )
-            .join('')}
+          <h2 class="category-label">${category.label}</h2>
+          <span class="category-count">${category.places.length}</span>
+        </div>
+        <i data-lucide="chevron-down" class="category-chevron"></i>
+      </div>
+      <div class="category-places">
+        ${placesHTML}
       </div>
     </section>
-    <div class="footer-spacer"></div>
   `;
-
-    container.innerHTML = html;
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Init map after DOM update
-    requestAnimationFrame(() => {
-        initMap(trip);
-    });
 }
 
-// ============================================================
-// CATEGORY TOGGLE
-// ============================================================
-
-window.toggleCategory = function (type) {
-    const section = document.getElementById(`cat-${type}`);
-    if (section) {
-        section.classList.toggle('open');
-    }
-};
-
-// ============================================================
-// MAP
-// ============================================================
+// --- Map Logic ---
 
 function initMap(trip) {
-    const mapEl = document.getElementById('map');
-    if (!mapEl) return;
+  const mapEl = document.getElementById('leaflet-map');
+  if (!mapEl) return;
 
-    // Destroy previous map
-    if (map) {
-        map.remove();
-        map = null;
-    }
+  // Maak globale L referentie veilig
+  const L = window.L;
+  if (!L) {
+    console.error('Leaflet not loaded');
+    return;
+  }
 
-    // Create map
-    map = L.map('map', {
-        center: trip.mapCenter,
-        zoom: trip.mapZoom,
-        zoomControl: true,
-        attributionControl: true,
-    });
+  // Cleanup old map if exists
+  if (map) {
+    map.remove();
+    currentMarkers = [];
+  }
 
-    // Dark tile layer
-    L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        {
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 19,
-        }
-    ).addTo(map);
+  // Init map with Positron (Light/Warm) theme for Japandi look
+  map = L.map('leaflet-map', {
+    zoomControl: false, // We reposition it
+    scrollWheelZoom: false // Prevent accidental scrolling while reading
+  }).setView(trip.mapCenter, trip.mapZoom);
 
-    // Add markers
-    mapMarkers = [];
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    trip.categories.forEach((cat) => {
-        cat.places.forEach((place) => {
-            if (!place.coords) return;
+  tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }).addTo(map);
 
-            // Custom icon
-            const markerIcon = L.divIcon({
-                className: 'custom-marker-wrapper',
-                html: `
-          <div class="custom-marker marker-${cat.type}">
-            <span class="custom-marker-inner">${cat.icon}</span>
+  // Group for bounds
+  const group = L.featureGroup();
+
+  trip.categories.forEach(category => {
+    category.places.forEach(place => {
+      // Create custom marker with Lucide icon
+      const markerHtml = `
+        <div class="custom-marker marker-${category.type}">
+          <div class="custom-marker-inner">
+            <i data-lucide="${category.icon}"></i>
           </div>
-        `,
-                iconSize: [36, 42],
-                iconAnchor: [18, 42],
-                popupAnchor: [0, -42],
-            });
+        </div>
+      `;
 
-            const marker = L.marker(place.coords, { icon: markerIcon }).addTo(map);
+      const customIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: markerHtml,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
 
-            marker.bindPopup(`
-        <div class="popup-name" style="color: ${cat.color}">${place.name}</div>
-        <div class="popup-category">${cat.icon} ${cat.label}</div>
-        <div style="margin-top: 4px; font-size: 0.78rem; color: #9A9AB0;">${place.address}</div>
-      `);
+      const popupHtml = `
+        <div class="popup-content">
+          <div class="popup-name">${place.name}</div>
+          <div class="popup-category" style="color: ${category.color}">
+            <i data-lucide="${category.icon}" style="width: 12px; height: 12px"></i>
+            ${category.label}
+          </div>
+        </div>
+      `;
 
-            // Click on card -> center map on marker
-            const cardEl = document.getElementById(`place-${slugify(place.name)}`);
-            if (cardEl) {
-                cardEl.addEventListener('click', () => {
-                    map.setView(place.coords, 16, { animate: true });
-                    marker.openPopup();
-                    mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
+      const marker = L.marker(place.coords, {
+        icon: customIcon,
+        title: place.name // For later querying
+      });
 
-            mapMarkers.push(marker);
-        });
+      // Initialize lucide icons in popup when it opens
+      marker.bindPopup(popupHtml).on('popupopen', (e) => {
+        if (window.lucide) {
+          window.lucide.createIcons({
+            root: e.popup._contentNode
+          });
+        }
+      });
+
+      marker.addTo(group);
+      currentMarkers.push(marker);
     });
+  });
 
-    // Fit bounds to all markers
-    if (mapMarkers.length > 0) {
-        const group = L.featureGroup(mapMarkers);
-        map.fitBounds(group.getBounds().pad(0.1));
-    }
+  group.addTo(map);
+
+  // Re-create icons for the markers that were just added to the DOM
+  if (window.lucide) {
+    window.lucide.createIcons({
+      root: document.getElementById('leaflet-map')
+    });
+  }
+
+  // Fit bounds if there are markers
+  if (currentMarkers.length > 0) {
+    map.fitBounds(group.getBounds().pad(0.1));
+  }
 }
 
-// ============================================================
-// UTILS
-// ============================================================
-
-function slugify(str) {
-    return str
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
+// --- Utils ---
+function slugify(text) {
+  return text.toLowerCase().replace(/[\s\W-]+/g, '-');
 }
+
+// Ensure icon creation runs on initial load
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+});
