@@ -165,27 +165,34 @@ function createCategoryHTML(category) {
     const slug = slugify(place.name);
     return `
       <article class="place-card" data-type="${category.type}">
-        <h3 class="place-name">${place.name}</h3>
-        <p class="place-description">${place.description}</p>
-        
-        <div class="place-address">
-          <i data-lucide="map-pin" class="place-address-icon"></i>
-          <span>${place.address}</span>
+        ${place.image ? `
+        <div class="place-image-wrapper">
+          <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy">
         </div>
-        
-        <div class="place-tags">
-          ${place.tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
-        </div>
+        ` : ''}
+        <div class="place-content">
+          <h3 class="place-name">${place.name}</h3>
+          <p class="place-description">${place.description}</p>
+          
+          <div class="place-address">
+            <i data-lucide="map-pin" class="place-address-icon"></i>
+            <span>${place.address}</span>
+          </div>
+          
+          <div class="place-tags">
+            ${place.tags.map(tag => `<span class="place-tag" data-type="${category.type}">${tag}</span>`).join('')}
+          </div>
 
-        <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
-          ${place.link ? `
-            <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
-              <i data-lucide="external-link"></i> Website
+          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+            ${place.link ? `
+              <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
+                <i data-lucide="external-link"></i> Website
+              </a>
+            ` : ''}
+            <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
+              <i data-lucide="navigation"></i> Bekijk op kaart
             </a>
-          ` : ''}
-          <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
-            <i data-lucide="navigation"></i> Bekijk op kaart
-          </a>
+          </div>
         </div>
       </article>
     `;

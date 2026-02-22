@@ -21,6 +21,7 @@ export default {
                     coords: [51.5595, 5.0820],
                     link: 'https://hotelcentraltilburg.nl',
                     tags: ['art deco', 'De Stijl', 'centrum'],
+                    image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80&w=800&h=500', // Boutique hotel room (working link)
                 },
                 {
                     name: 'Auberge du Bonheur',
@@ -29,6 +30,7 @@ export default {
                     coords: [51.5517, 5.0647],
                     link: 'https://aubergedubonheur.nl',
                     tags: ['boutique', 'bos', 'textielgeschiedenis'],
+                    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800&h=500', // Luxury forest hotel
                 },
                 {
                     name: 'De Posthoorn',
@@ -37,6 +39,7 @@ export default {
                     coords: [51.5606, 5.0839],
                     link: 'https://deposthoorntilburg.nl',
                     tags: ['monumentaal', 'centrum', 'station'],
+                    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800&h=500', // Classic architecture hotel
                 },
             ],
         },
@@ -53,6 +56,7 @@ export default {
                     coords: [51.5574, 5.0880],
                     link: null,
                     tags: ['cocktails', 'workshops', 'centrum'],
+                    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800&h=500', // Stylish cocktail making
                 },
                 {
                     name: 'Doloris\' Rooftopbar',
@@ -61,6 +65,7 @@ export default {
                     coords: [51.5620, 5.0761],
                     link: 'https://doloris.nl',
                     tags: ['rooftop', 'uitzicht', 'creatief'],
+                    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800&h=500', // Sunset drinks
                 },
                 {
                     name: 'Noir',
@@ -69,6 +74,7 @@ export default {
                     coords: [51.5575, 5.0863],
                     link: null,
                     tags: ['Frans', 'tuin', 'intiem'],
+                    image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=800&h=500', // Dark moody cocktail
                 },
                 {
                     name: 'Gin Fizz',
@@ -77,6 +83,7 @@ export default {
                     coords: [51.5573, 5.0877],
                     link: null,
                     tags: ['gin', 'premium', 'gezellig'],
+                    image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&q=80&w=800&h=500', // Gin and tonic
                 },
             ],
         },
@@ -93,6 +100,7 @@ export default {
                     coords: [51.5633, 5.0752],
                     link: 'https://eetbardewagon.nl',
                     tags: ['uniek', 'treincoupé', 'Spoorzone'],
+                    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800&h=500', // Cozy restaurant interior
                 },
                 {
                     name: 'Gist',
@@ -101,6 +109,7 @@ export default {
                     coords: [51.5581, 5.0853],
                     link: null,
                     tags: ['fine dining', 'lokaal', 'seizoensgebonden'],
+                    image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&q=80&w=800&h=500', // Fine dining plating
                 },
                 {
                     name: 'Sarban',
@@ -109,6 +118,7 @@ export default {
                     coords: [51.5548, 5.0886],
                     link: null,
                     tags: ['Afghaans', 'proeverij', 'populair'],
+                    image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80&w=800&h=500', // Middle eastern food spread
                 },
                 {
                     name: 'Nomadas',
@@ -117,6 +127,7 @@ export default {
                     coords: [51.5628, 5.0905],
                     link: null,
                     tags: ['tasting menu', 'verborgen', 'internationaal'],
+                    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&q=80&w=800&h=500', // Modern elegant tasting menu
                 },
             ],
         },
@@ -133,6 +144,7 @@ export default {
                     coords: [51.5569, 5.0857],
                     link: null,
                     tags: ['arthouse', 'filmtheater', 'bar'],
+                    image: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&q=80&w=800&h=500', // Cinema seats
                 },
                 {
                     name: 'De NWE Vorst',
@@ -141,6 +153,7 @@ export default {
                     coords: [51.5573, 5.0860],
                     link: 'https://denwevorst.nl',
                     tags: ['theater', 'villa', 'nieuw talent'],
+                    image: 'https://images.unsplash.com/photo-1507676184212-d0330a15673c?auto=format&fit=crop&q=80&w=800&h=500', // Theater stage
                 },
                 {
                     name: 'Theaters Tilburg',
@@ -149,6 +162,7 @@ export default {
                     coords: [51.5590, 5.0818],
                     link: 'https://theaterstilburg.nl',
                     tags: ['schouwburg', 'concertzaal', 'breed programma'],
+                    image: 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?auto=format&fit=crop&q=80&w=800&h=500', // Concert venue
                 },
                 {
                     name: 'Poppodium 013',
@@ -157,6 +171,7 @@ export default {
                     coords: [51.5590, 5.0860],
                     link: 'https://013.nl',
                     tags: ['live muziek', 'poppodium', 'dans'],
+                    image: 'https://images.unsplash.com/photo-1470229722913-7c090be5c520?auto=format&fit=crop&q=80&w=800&h=500', // Live band crowd
                 },
             ],
         },
