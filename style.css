@@ -1250,6 +1250,113 @@ body {
   border-color: var(--color-cocktail);
 }
 
+/* --- Reject button --- */
+.reject-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0.5;
+}
+
+.reject-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(148, 140, 132, 0.1);
+  opacity: 1;
+}
+
+.reject-btn:active {
+  transform: scale(0.9);
+}
+
+.reject-btn--active {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+.reject-btn--active .reject-icon {
+  stroke: var(--text-secondary);
+}
+
+.reject-icon {
+  transition: all var(--transition-fast);
+}
+
+.heart-avatar--rejected {
+  background: var(--text-muted);
+  color: white;
+  border-color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* --- Archief (mutual reject) --- */
+.category-archive {
+  margin-top: var(--space-sm);
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: var(--space-sm);
+}
+
+.category-archive[hidden] {
+  display: none;
+}
+
+.archive-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: var(--space-xs) 0;
+  transition: color var(--transition-fast);
+}
+
+.archive-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.archive-toggle .archive-chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-normal);
+}
+
+.category-archive.open .archive-chevron {
+  transform: rotate(180deg);
+}
+
+.archive-places {
+  display: none;
+  padding-top: var(--space-xs);
+}
+
+.category-archive.open .archive-places {
+  display: block;
+}
+
+.place-card--archived {
+  opacity: 0.45;
+  filter: grayscale(0.4);
+  transition: opacity var(--transition-normal), filter var(--transition-normal);
+}
+
+.place-card--archived:hover {
+  opacity: 0.7;
+  filter: grayscale(0.1);
+}
+
 /* --- Notes --- */
 .place-notes {
   margin-top: var(--space-md);

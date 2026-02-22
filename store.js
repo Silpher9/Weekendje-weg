@@ -86,9 +86,36 @@ export async function toggleHeart(tripId, slug) {
   const ref = doc(db, 'trips', tripId, 'places', slug);
   const current = cache[slug]?.hearts?.[user];
 
-  await setDoc(ref, {
+  const update = {
     hearts: { [user]: current ? deleteField() : true }
-  }, { merge: true });
+  };
+
+  // Remove reject if setting heart
+  if (!current && cache[slug]?.rejects?.[user]) {
+    update.rejects = { [user]: deleteField() };
+  }
+
+  await setDoc(ref, update, { merge: true });
+}
+
+// --- Reject toggle ---
+export async function toggleReject(tripId, slug) {
+  const user = getCurrentUser();
+  if (!user) return;
+
+  const ref = doc(db, 'trips', tripId, 'places', slug);
+  const current = cache[slug]?.rejects?.[user];
+
+  const update = {
+    rejects: { [user]: current ? deleteField() : true }
+  };
+
+  // Remove heart if setting reject
+  if (!current && cache[slug]?.hearts?.[user]) {
+    update.hearts = { [user]: deleteField() };
+  }
+
+  await setDoc(ref, update, { merge: true });
 }
 
 // --- Check mutual like ---
@@ -96,6 +123,13 @@ export function isMutualLike(slug) {
   const data = cache[slug];
   if (!data?.hearts) return false;
   return USERS.every(u => data.hearts[u] === true);
+}
+
+// --- Check mutual reject ---
+export function isMutualReject(slug) {
+  const data = cache[slug];
+  if (!data?.rejects) return false;
+  return USERS.every(u => data.rejects[u] === true);
 }
 
 // --- Rank management ---
