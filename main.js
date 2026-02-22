@@ -226,6 +226,9 @@ function createCategoryHTML(category) {
             <a href="#" class="place-link view-on-map" data-type="${category.type}" data-lat="${place.coords[0]}" data-lng="${place.coords[1]}" data-name="${place.name}">
               <i data-lucide="navigation"></i> Bekijk op kaart
             </a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${place.coords[0]},${place.coords[1]}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
+              <i data-lucide="route"></i> Route
+            </a>
           </div>
         </div>
       </article>

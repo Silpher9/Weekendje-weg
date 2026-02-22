@@ -44,7 +44,16 @@ Bewerk `/home/damonbot/.gemini/antigravity/scratch/Weekendje-weg/main.js`:
    `const trips = [tilburg, amsterdam];`
 
 ## Stap 6: Lokale Verificatie
-Test de app in je interne browser (localhost:5173). Controleer of de nieuwe tab werkt, de markers op de kaart verschijnen, de foto's inladen met een hoogte van 180px, en of de Lucide iconen geselecteerd zijn. Pas indien nodig de `mapCenter` en `mapZoom` van de nieuwe stad aan zodat de kaart goed schaalt.
+Test de app in je interne browser (localhost:5173). Controleer of:
+- De nieuwe tab werkt en de markers op de kaart verschijnen.
+- De foto's correct inladen bij elke kaart (180px hoogte).
+- De prijsniveaus (€€€) correct worden weergegeven (gouden = actief, zwart = inactief).
+- De openingstijden onder het adres staan met een klokicoontje.
+- De reviews-accordion openklapt en 3 reviews toont.
+- De **"Route" knop** bij elke plek naar Google Maps navigatie linkt (wordt automatisch gegenereerd uit de `coords`).
+- De Lucide iconen geselecteerd zijn.
+- Wildcard kaarten een gouden rand hebben (indien van toepassing).
+Pas indien nodig de `mapCenter` en `mapZoom` van de nieuwe stad aan zodat de kaart goed schaalt.
 
 ## Stap 7: Commit & Push
 Zodra de stad compleet is overgezet en gecheckt, push de nieuwe code naar GitHub met een strakke commit message.
