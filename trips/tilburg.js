@@ -12,7 +12,7 @@ export default {
             type: 'hotel',
             icon: 'bed-double',
             label: 'Hotels',
-            color: '#A68A73', // Zacht terracotta/beige
+            color: '#A68A73',
             places: [
                 {
                     name: 'Hotel Central Tilburg',
@@ -21,7 +21,7 @@ export default {
                     coords: [51.5595, 5.0820],
                     link: 'https://hotelcentraltilburg.nl',
                     tags: ['art deco', 'De Stijl', 'centrum'],
-                    image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80&w=800&h=500', // Boutique hotel room (working link)
+                    image: 'https://static.wixstatic.com/media/15b4e3_15b344933f1e4fdebf296f45143fecca~mv2.jpeg/v1/fill/w_800,h_500,q_90/15b4e3_15b344933f1e4fdebf296f45143fecca~mv2.jpeg',
                 },
                 {
                     name: 'Auberge du Bonheur',
@@ -30,16 +30,16 @@ export default {
                     coords: [51.5517, 5.0647],
                     link: 'https://aubergedubonheur.nl',
                     tags: ['boutique', 'bos', 'textielgeschiedenis'],
-                    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800&h=500', // Luxury forest hotel
+                    image: 'https://aubergedubonheur.nl/wp-content/uploads/sites/2/2025/08/Auberge-du-Bonheur-LR05-768x512.webp',
                 },
                 {
-                    name: 'De Posthoorn',
-                    description: 'Historisch monumentaal pand getransformeerd tot stijlvol hotel & venue. Centraal gelegen bij het station.',
-                    address: 'Stationsstraat 40, 5038 ED Tilburg',
-                    coords: [51.5606, 5.0839],
-                    link: 'https://deposthoorntilburg.nl',
-                    tags: ['monumentaal', 'centrum', 'station'],
-                    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800&h=500', // Classic architecture hotel
+                    name: 'Mercure Hotel Tilburg Centrum',
+                    description: 'Luxe viersterrenhotel in het hart van de stad, direct aan de Heuvel. Moderne kamers en faciliteiten inclusief Citysauna en een eigen zwembad.',
+                    address: 'Heuvel 37, 5038 CP Tilburg',
+                    coords: [51.5562, 5.0881],
+                    link: 'https://mercure-tilburg.nl',
+                    tags: ['centrum', 'hotel', 'luxe'],
+                    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800&h=500', // TODO: vervang door eigen foto
                 },
             ],
         },
@@ -47,25 +47,25 @@ export default {
             type: 'cocktail',
             icon: 'martini',
             label: 'Cocktailbars',
-            color: '#D4A3A3', // Gedempt roze
+            color: '#D4A3A3',
             places: [
                 {
                     name: 'Studio',
                     description: 'Stijlvolle cocktailbar aan de Korte Heuvel. Uitgebreide kaart met creatieve cocktails. Geeft ook cocktailworkshops!',
                     address: 'Korte Heuvel 7, 5011 DV Tilburg',
                     coords: [51.5574, 5.0880],
-                    link: null,
+                    link: 'https://studio-tilburg.com',
                     tags: ['cocktails', 'workshops', 'centrum'],
-                    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800&h=500', // Stylish cocktail making
+                    image: 'https://studio-tilburg.com/wp-content/uploads/2023/11/DSC9077.png',
                 },
                 {
-                    name: 'Doloris\' Rooftopbar',
-                    description: 'Rooftopbar met spectaculair uitzicht over Tilburg. Cocktails met een eigen twist, zoals hun Pornstar Martini met witte chocolade en mandarijn.',
+                    name: 'Strøming Rooftopbar',
+                    description: 'Rooftopbar met spectaculair uitzicht over de Spoorzone en Tilburg. Bijzondere cocktails in een unieke setting hoog boven de stad.',
                     address: 'Spoorzone, Tilburg',
                     coords: [51.5620, 5.0761],
-                    link: 'https://doloris.nl',
-                    tags: ['rooftop', 'uitzicht', 'creatief'],
-                    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800&h=500', // Sunset drinks
+                    link: 'https://stromingtilburg.nl',
+                    tags: ['rooftop', 'uitzicht', 'Spoorzone'],
+                    image: 'https://www.stromingtilburg.nl/wp-content/uploads/2025/06/20250411-Stroming-Tilbrug-Rooftop-LR-19.jpg',
                 },
                 {
                     name: 'Noir',
@@ -74,7 +74,7 @@ export default {
                     coords: [51.5575, 5.0863],
                     link: null,
                     tags: ['Frans', 'tuin', 'intiem'],
-                    image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=800&h=500', // Dark moody cocktail
+                    image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=800&h=500', // TODO: vervang door eigen foto
                 },
                 {
                     name: 'Gin Fizz',
@@ -83,7 +83,7 @@ export default {
                     coords: [51.5573, 5.0877],
                     link: null,
                     tags: ['gin', 'premium', 'gezellig'],
-                    image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&q=80&w=800&h=500', // Gin and tonic
+                    image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&q=80&w=800&h=500', // TODO: vervang door eigen foto
                 },
             ],
         },
@@ -91,7 +91,7 @@ export default {
             type: 'restaurant',
             icon: 'utensils',
             label: 'Restaurants',
-            color: '#D19C5B', // Warm oker/karamel
+            color: '#D19C5B',
             places: [
                 {
                     name: 'Eetbar De Wagon',
@@ -100,34 +100,34 @@ export default {
                     coords: [51.5633, 5.0752],
                     link: 'https://eetbardewagon.nl',
                     tags: ['uniek', 'treincoupé', 'Spoorzone'],
-                    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800&h=500', // Cozy restaurant interior
+                    image: 'https://eetbardewagoncom.lightningbasecdn.com/wp-content/uploads/2022/09/foto-staand-coupe-Eetbar-de-Wagon-Tilburg.jpg',
                 },
                 {
                     name: 'Gist',
                     description: 'Een van de beste restaurants van Tilburg (Volkskrant: 8,5). Seizoensgebonden deelgerechten met lokale ingrediënten. Groenten in de hoofdrol. Klein en snel volgeboekt!',
                     address: 'Willem II-straat 1, 5038 BA Tilburg',
                     coords: [51.5581, 5.0853],
-                    link: null,
+                    link: 'https://gisttilburg.nl',
                     tags: ['fine dining', 'lokaal', 'seizoensgebonden'],
-                    image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&q=80&w=800&h=500', // Fine dining plating
+                    image: 'https://gisttilburg.nl/wp-content/uploads/2024/03/Header-GIST-Tilburg-1-scaled.jpg',
                 },
                 {
                     name: 'Sarban',
-                    description: 'Afghaans restaurant, een begrip in Tilburg sinds 2010. Probeer de Afghaanse proeverij voor een compleet smaakavontuur. Op loopafstand van het station.',
-                    address: 'Koestraat 138, 5014 EG Tilburg',
+                    description: 'Afghaans restaurant, een begrip in Tilburg. Probeer de Afghaanse proeverij voor een compleet smaakavontuur. Op loopafstand van het station.',
+                    address: 'Besterdring 2, 5014 HL Tilburg',
                     coords: [51.5548, 5.0886],
-                    link: null,
+                    link: 'https://sarban.nl',
                     tags: ['Afghaans', 'proeverij', 'populair'],
-                    image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80&w=800&h=500', // Middle eastern food spread
+                    image: 'https://sarban.nl/wp-content/uploads/2019/09/mantoe.jpg',
                 },
                 {
                     name: 'Nomadas',
                     description: 'Verborgen parel in een woonwijk. Chefs combineren invloeden van Lanzarote, Ecuador en Madrid. Intiem tasting menu met verrassende smaken.',
                     address: 'Gasthuisring 55, 5041 DT Tilburg',
                     coords: [51.5628, 5.0905],
-                    link: null,
+                    link: 'https://nomadas-gastrobar.nl',
                     tags: ['tasting menu', 'verborgen', 'internationaal'],
-                    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&q=80&w=800&h=500', // Modern elegant tasting menu
+                    image: 'https://nomadas-gastrobar.nl/wp-content/uploads/2024/01/Nomadas-Tafels-op-een-rij.jpg',
                 },
             ],
         },
@@ -135,16 +135,16 @@ export default {
             type: 'culture',
             icon: 'ticket',
             label: 'Cultuur',
-            color: '#8BAA99', // Matcha / Saliegroen
+            color: '#8BAA99',
             places: [
                 {
                     name: 'Cinecitta',
                     description: 'Filmtheater met arthouse films, bijzondere vertoningen en een gezellige bar. De filmervaring die je zoekt, geen standaard bioscoop.',
                     address: 'Willem II-straat 29, 5038 BA Tilburg',
                     coords: [51.5569, 5.0857],
-                    link: null,
+                    link: 'https://cinecittatilburg.nl',
                     tags: ['arthouse', 'filmtheater', 'bar'],
-                    image: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&q=80&w=800&h=500', // Cinema seats
+                    image: 'https://cinecittatilburg.nl/wp-content/uploads/2022/08/20201130_Cinecitta2_Fotografie-Jules-van-Iperen_026-2.jpg',
                 },
                 {
                     name: 'De NWE Vorst',
@@ -153,16 +153,16 @@ export default {
                     coords: [51.5573, 5.0860],
                     link: 'https://denwevorst.nl',
                     tags: ['theater', 'villa', 'nieuw talent'],
-                    image: 'https://images.unsplash.com/photo-1507676184212-d0330a15673c?auto=format&fit=crop&q=80&w=800&h=500', // Theater stage
+                    image: 'https://denieuwevorst.ams3.cdn.digitaloceanspaces.com/main/_resized/algemeen/_1200x630_crop_center-center_82_none/sfeerbeeld-1.jpg',
                 },
                 {
-                    name: 'Theaters Tilburg',
-                    description: 'De Schouwburg en Concertzaal in één. Breed programma: cabaret, dans, klassiek, musicals. Meer dan 300 voorstellingen per seizoen.',
+                    name: 'Schouwburg Concertzaal Tilburg',
+                    description: 'De Schouwburg en Concertzaal in één (voorheen Theaters Tilburg). Breed programma: cabaret, dans, klassiek, musicals. Meer dan 300 voorstellingen per seizoen.',
                     address: 'Louis Bouwmeesterplein 1, 5038 TN Tilburg',
                     coords: [51.5590, 5.0818],
-                    link: 'https://theaterstilburg.nl',
+                    link: 'https://schouwburgconcertzaaltilburg.nl',
                     tags: ['schouwburg', 'concertzaal', 'breed programma'],
-                    image: 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?auto=format&fit=crop&q=80&w=800&h=500', // Concert venue
+                    image: 'https://static.schouwburgconcertzaaltilburg.nl/cache/je-bezoek.2709/je-bezoek-s1920x1080.jpg',
                 },
                 {
                     name: 'Poppodium 013',
@@ -171,7 +171,7 @@ export default {
                     coords: [51.5590, 5.0860],
                     link: 'https://013.nl',
                     tags: ['live muziek', 'poppodium', 'dans'],
-                    image: 'https://images.unsplash.com/photo-1470229722913-7c090be5c520?auto=format&fit=crop&q=80&w=800&h=500', // Live band crowd
+                    image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&q=80&w=800&h=500', // TODO: vervang door eigen foto
                 },
             ],
         },
