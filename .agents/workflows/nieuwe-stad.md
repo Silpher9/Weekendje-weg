@@ -16,7 +16,7 @@ Gebruik deze workflow ALTIJD wanneer de gebruiker vraagt om een nieuwe stad te o
 |-----------|----------|
 | **Sfeer** | Intimate & craft — kleine zaken, eigenaar achter de bar, handwerk, aandacht voor detail. Chique mag ook: sterrenrestaurants en fine dining zijn welkom |
 | **Hotels** | Boutique, design hotel, B&B met karakter. Nooit ketens |
-| **Cocktailbars** | Ambachtelijk, creatieve cocktails, intiem interieur. Liever een verborgen bar dan een druk café |
+| **Cocktailbars / Avondplekken** | Ambachtelijke cocktailbars hebben voorkeur — creatieve cocktails, intiem interieur, liever een verborgen bar dan een druk café. **Maar**: leuke cafés, bars met een goede drankenkaart, of restaurant/bar combo's waar je 's avonds gezellig een drankje kunt doen zijn ook welkom als fallback. Het gaat om de avondervaring, niet strikt om cocktails |
 | **Restaurants** | Lokaal, seizoensgebonden, liefst deelgerechten of tasting menu. Sterrenrestaurants zijn een pluspunt zolang ze niet stijf zijn — Michelin-ster = bonus |
 | **Cultuur** | Prioriteit: **1. Filmtheaters** (arthouse), **2. Musea** (kunst/design/fotografie), **3. Theater** (kleinschalig, nieuw talent). Zie ook de uitschietersregel hieronder |
 | **Budget** | Middenklasse met uitschieters — €€ als basis, €€€ voor iets speciaals |
@@ -52,11 +52,16 @@ Voeg de resultaten van alle rondes samen en verifieer elke kandidaat met de MCP-
 
 ### Stap 1b: Verifieer met Google Maps MCP
 
-Gebruik de **Google Maps MCP server** (geconfigureerd in `.mcp.json`) om elke gevonden plek te verifiëren. Roep per locatie de volgende tools aan:
+Gebruik de **Google Maps MCP server** (geconfigureerd in `.mcp.json`) om elke gevonden plek te verifiëren.
 
-1. **`maps_search_places`** — Zoek de plek op naam + stad om het juiste resultaat te vinden
-2. **`maps_place_details`** — Haal op: rating, aantal reviews, openingstijden, adres, website, open-status
-3. **`maps_geocode`** — Verkrijg exacte coördinaten als deze niet uit place_details komen
+#### Efficiëntie: paralleliseer MCP-calls
+
+- **`maps_search_places`** geeft al coördinaten én rating terug — `maps_geocode` is vaak overbodig.
+- Doe ALLE `maps_search_places` calls voor alle kandidaten in één batch (parallel tool calls).
+- Doe daarna ALLE `maps_place_details` calls parallel voor de plekken die door de eerste screening kwamen.
+- Typisch zijn **2 rondes** MCP-calls genoeg in plaats van 3 per plek:
+  1. **Ronde 1**: Alle `maps_search_places` parallel → filter op rating, open-status, keten
+  2. **Ronde 2**: Alle `maps_place_details` parallel voor geselecteerde plekken → details, reviews, openingstijden
 
 ### Kwaliteitscriteria per locatie
 
@@ -67,10 +72,19 @@ Controleer met de MCP-resultaten het volgende:
 | Open-status | Moet daadwerkelijk open zijn (niet permanent gesloten) | **Sla over**, zoek een alternatief |
 | Beoordeling | Minimaal **4 sterren** op Google Maps | **Sla over**, zoek een alternatief |
 | Aantal reviews | Meer dan **10 reviews** | Mag als **Wildcard** als de score ≥ 4.5 is (zet `isWildcard: true`) |
-| Uniek / Onafhankelijk | Moet een lokaal, onafhankelijk bedrijf zijn — geen ketens (Mercure, Hilton, ibis, Van der Valk, Fletcher, McDonald's, Starbucks, etc.) | **Sla over**, zoek een boutique/onafhankelijk alternatief |
+| Uniek / Onafhankelijk | Bij voorkeur lokaal en onafhankelijk — geen ketens (Mercure, Hilton, ibis, Van der Valk, Fletcher, McDonald's, Starbucks, Leonardo Hotels, Best Western, NH Hotels, Marriott, Holiday Inn, Accor, Bastion, Hampshire, Golden Tulip, WestCord, Postillion, Apollo, etc.). **Nuance**: als een keten-hotel écht uniek is (bijzonder historisch pand, uitzonderlijk interieur, iconisch gebouw), mag het wél worden opgenomen — vermeld dan expliciet waarom het een uitzondering verdient. Controleer altijd de volledige naam in `maps_search_places` — ketens rebranden regelmatig lokale hotels (bijv. "Oranje Hotel" → "Leonardo Oranje Hotel"). | **Sla over** tenzij het een beargumenteerde uitzondering is |
 | B&B karakter | B&B's moeten een eigen identiteit hebben (historisch pand, bijzonder interieur, thema) én op loop-/fietsafstand van het centrum liggen | **Sla over** — een logeerkamer in een reguliere woonwijk voldoet niet |
 
 **BELANGRIJK**: Als een locatie niet voldoet, breek dan NIET het proces af. Sla de locatie over en zoek een vervangende plek in dezelfde categorie. Ga pas verder naar Stap 2 als je minimaal 3 plekken per categorie hebt.
+
+### Kleinere steden (< 100.000 inwoners)
+
+Bij kleinere steden is het aanbod in sommige categorieën beperkt, met name cocktailbars. In dat geval:
+- **2 sterke plekken** is acceptabel als er echt geen derde is
+- Een bar die ook cocktails serveert (restaurant/bar combo) telt mee
+- Leuke cafés of plekken waar je 's avonds nog een drankje kunt doen zijn goede fallbacks
+- Gebruik de wildcard-optie voor veelbelovende nieuwkomers met weinig reviews
+- Vermeld aan de gebruiker als een categorie dun bezet is in de stad
 
 ### Prioriteitstermen (hotels)
 
@@ -96,7 +110,7 @@ Streef naar minimaal **1 boutique of design hotel** in de selectie, mits beschik
 
 ## Stap 2: Zoek echte sfeerfoto's
 
-Bezoek de officiële websites van de gevonden plekken en zoek naar echte foto's. Gebruik directe afbeeldings-URLs voor de `image` eigenschap (resolutie circa 800x500 is ideaal, `object-fit` handelt de aspect ratio af).
+Zoek per plek een echte foto. Gebruik directe afbeeldings-URLs voor de `image` eigenschap (resolutie circa 800x500 is ideaal, `object-fit` handelt de aspect ratio af).
 
 ### Foto-richtlijnen per categorie
 
@@ -107,7 +121,34 @@ Bezoek de officiële websites van de gevonden plekken en zoek naar echte foto's.
 | **Restaurants** | Interieur of gerecht | Sfeer of signature dish |
 | **Cultuur** | Exterieur of zaal | Herkenbaar gebouw of de binnenzaal |
 
-**Als er geen bruikbare foto op de website staat**: laat het `image` veld leeg (de app toont automatisch een fallback). Gebruik GEEN stockfoto's van Unsplash of vergelijkbare sites.
+### Fallback-keten voor foto's (in volgorde)
+
+Probeer de volgende bronnen in volgorde. Besteed **maximaal ~2 minuten per plek** aan foto's zoeken — als het niet lukt, ga door.
+
+1. **Officiële website** — Bezoek de website van de plek en zoek naar directe afbeeldings-URLs
+2. **Booking.com / TripAdvisor / Skyscanner** — Zoek de plek op deze sites via `WebFetch` en probeer een foto-URL te vinden van de fotopagina
+3. **Wikimedia Commons API** — Zoek rechtenvrije foto's:
+   ```
+   curl -sL "https://commons.wikimedia.org/w/api.php?action=query&list=search
+   &srsearch=[straat]+[nummer]+[stad]&srnamespace=6&srlimit=5&format=json"
+   ```
+   Haal daarna de directe URL op:
+   ```
+   curl -sL "https://commons.wikimedia.org/w/api.php?action=query
+   &titles=File:[bestandsnaam]&prop=imageinfo&iiprop=url|size&format=json"
+   ```
+   De directe URL staat in `imageinfo[0].url` (format: `upload.wikimedia.org/...`).
+   **Let op**: Wikimedia heeft rate limiting. Gebruik `sleep 10` tussen requests bij een 429.
+4. **Gebruiker vragen** — Als geen van de bovenstaande bronnen een foto oplevert, vraag de gebruiker of zij zelf een foto willen plaatsen. Ga door met het `image` veld leeg.
+
+### URL-validatie
+
+Controleer voor elke foto-URL:
+- Moet een **absolute URL** zijn (begint met `https://`)
+- Moet een **echt domein** zijn (geen template-domeinen als `*.yourhotelwebsite.com` of `*.placeholder.com`)
+- Bij twijfel: laat het `image` veld leeg — een fallback is beter dan een broken image
+
+Gebruik GEEN stockfoto's van Unsplash of vergelijkbare sites.
 
 ## Stap 3: Verzamel reviews
 
@@ -118,7 +159,15 @@ Haal reviews op via `maps_place_details` (deze bevat Google Maps reviews).
 2. TripAdvisor reviews
 3. Reviews op de eigen website van de locatie
 
-Selecteer **3 korte, positieve reviews** per locatie van echte bezoekers. **Als reviews niet vindbaar zijn**: laat het `reviews` veld weg. De app handelt dit correct af.
+Selecteer **3 korte, positieve reviews** per locatie van echte bezoekers.
+
+- **Filter**: Kies reviews met rating ≥ 4 sterren.
+- **Voorkeur**: Reviews die iets specifieks noemen (sfeer, een gerecht, de service) boven generieke "great place!" reviews.
+- **Taal**: Engelse of Nederlandse reviews. Vertaal niet — gebruik de originele tekst.
+- **Negatieve reviews**: Als een plek overwegend negatieve reviews heeft, neem dan ook **1 informatieve negatieve review** mee zodat het beeld eerlijk is. Kies de meest constructieve/specifieke negatieve review.
+- **Als er minder dan 3 positieve reviews zijn**: Gebruik wat er is. Als een plek overwegend negatief scoort, heroverweeg de selectie van die plek.
+
+**Als reviews niet vindbaar zijn**: laat het `reviews` veld weg. De app handelt dit correct af.
 
 ## Stap 4: Maak het stadsbestand aan
 
@@ -153,6 +202,26 @@ Maak in `/home/damonbot/.gemini/antigravity/scratch/Weekendje-weg/trips/` een ni
 | Cocktailbars | `cocktail` | `martini` | `#D4A3A3` |
 | Restaurants | `restaurant` | `utensils` | `#D19C5B` |
 | Cultuur | `culture` | `ticket` | `#8BAA99` |
+
+## Stap 4b: Banner-afbeelding
+
+Zoek een kenmerkende stadsfoto (gracht, skyline, herkenbaar plein) voor de banner. Banners zijn **640×640 pixels** (vierkant) en worden opgeslagen als `public/assets/banner-[stadsnaam].png`.
+
+### Bronnen (in volgorde van voorkeur):
+1. **Wikimedia Commons** — zoek op "[stad] canal/gracht/centrum" via de Wikimedia API (zie Stap 2)
+2. **Officiële toerismewebsite** (bijv. visitleeuwarden.com, visitutrecht.com)
+
+### Verwerking:
+Download de foto en crop/resize naar 640×640 met Python PIL:
+```python
+from PIL import Image
+img = Image.open('input.jpg')
+w, h = img.size
+s = min(w, h)
+left, top = (w - s) // 2, (h - s) // 2
+img.crop((left, top, left + s, top + s)).resize((640, 640), Image.LANCZOS) \
+   .save('public/assets/banner-[stad].png', 'PNG')
+```
 
 ## Stap 5: Voeg de stad toe aan de hoofdapplicatie
 
