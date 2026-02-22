@@ -4,7 +4,7 @@ export default {
     name: 'Tilburg',
     subtitle: 'Textielstad met karakter',
     dates: 'Nog te plannen',
-    banner: '/assets/banner-tilburg.png',
+    banner: './assets/banner-tilburg.png',
     mapCenter: [51.5580, 5.0840],
     mapZoom: 14,
     categories: [

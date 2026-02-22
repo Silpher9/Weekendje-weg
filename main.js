@@ -135,8 +135,16 @@ function renderTrip(trip) {
       });
     });
 
-    // Map collapse/expand toggle
+    // Calculate sticky offset dynamically (top-bar + tabs height)
     const mapWrapper = document.getElementById('map-sticky-wrapper');
+    const topBar = document.getElementById('top-bar');
+    const tabs = document.getElementById('trip-tabs');
+    if (mapWrapper && topBar && tabs) {
+      const stickyOffset = topBar.offsetHeight + tabs.offsetHeight;
+      mapWrapper.style.setProperty('--sticky-offset', `${stickyOffset}px`);
+    }
+
+    // Map collapse/expand toggle
     const mapToggle = document.getElementById('map-toggle');
     const mapBody = document.getElementById('map-sticky-body');
 
@@ -307,8 +315,15 @@ function initMap(trip) {
   // Init map with Positron (Light/Warm) theme for Japandi look
   map = L.map('leaflet-map', {
     zoomControl: false, // We reposition it
-    scrollWheelZoom: false // Prevent accidental scrolling while reading
+    scrollWheelZoom: false, // Prevent accidental scrolling while reading
+    dragging: !L.Browser.mobile, // Disable 1-finger drag on mobile
+    tap: false // Disable tap handler to prevent touch issues
   }).setView(trip.mapCenter, trip.mapZoom);
+
+  // Two-finger gesture handling for mobile
+  if (L.Browser.mobile) {
+    setupTwoFingerGesture(mapEl, map);
+  }
 
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -384,4 +399,34 @@ function initMap(trip) {
   }
 }
 
+// --- Two-finger gesture handling for mobile ---
+function setupTwoFingerGesture(mapEl, mapInstance) {
+  // Create overlay hint
+  const overlay = document.createElement('div');
+  overlay.className = 'map-gesture-overlay';
+  overlay.textContent = 'Gebruik twee vingers om de kaart te bewegen';
+  mapEl.parentElement.appendChild(overlay);
 
+  let hideTimeout = null;
+
+  mapEl.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      // Show hint on single finger touch
+      overlay.classList.add('visible');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => overlay.classList.remove('visible'), 1500);
+    } else if (e.touches.length >= 2) {
+      // Enable dragging for two-finger gesture
+      overlay.classList.remove('visible');
+      clearTimeout(hideTimeout);
+      mapInstance.dragging.enable();
+    }
+  }, { passive: true });
+
+  mapEl.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+      // Disable dragging when less than 2 fingers
+      setTimeout(() => mapInstance.dragging.disable(), 50);
+    }
+  }, { passive: true });
+}
