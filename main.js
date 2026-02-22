@@ -6,9 +6,10 @@ import L from 'leaflet';
 
 // --- Trip Imports ---
 import tilburg from './trips/tilburg.js';
+import tilburgV2 from './trips/tilburg-v2.js';
 
 // All trips (add new imports here)
-const trips = [tilburg];
+const trips = [tilburg, tilburgV2];
 
 // --- State ---
 let currentTrip = trips[0];
@@ -86,28 +87,34 @@ function renderTrip(trip) {
         </div>
       </div>
 
+      <!-- Sticky Map Section -->
+      <div class="map-sticky-wrapper" id="map-sticky-wrapper">
+        <div class="map-sticky-header" id="map-toggle">
+          <div class="map-sticky-header-left">
+            <i data-lucide="map"></i>
+            <span class="map-sticky-title">Kaart van ${trip.name}</span>
+          </div>
+          <div class="map-sticky-header-right">
+            <div class="map-legend-inline">
+              ${trip.categories.map(cat => `
+                <div class="legend-dot-wrapper legend-dot-wrapper--small" style="background: ${cat.color}20">
+                  <i data-lucide="${cat.icon}" style="color: ${cat.color}"></i>
+                </div>
+              `).join('')}
+            </div>
+            <button class="map-collapse-btn" aria-label="Kaart in-/uitklappen">
+              <i data-lucide="chevron-up" class="map-collapse-icon"></i>
+            </button>
+          </div>
+        </div>
+        <div class="map-sticky-body" id="map-sticky-body">
+          <div id="leaflet-map" class="map-container"></div>
+        </div>
+      </div>
+
       <!-- Categories -->
       ${trip.categories.map(createCategoryHTML).join('')}
 
-      <!-- Map Section -->
-      <div class="map-section">
-        <div class="map-section-header">
-          <i data-lucide="map"></i>
-          <h2 class="map-section-title">Kaart van ${trip.name}</h2>
-        </div>
-        <div id="leaflet-map" class="map-container"></div>
-        <div class="map-legend">
-          ${trip.categories.map(cat => `
-            <div class="legend-item">
-              <div class="legend-dot-wrapper" style="background: ${cat.color}20">
-                <i data-lucide="${cat.icon}" style="color: ${cat.color}"></i>
-              </div>
-              <span>${cat.label}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      
       <div class="footer-spacer"></div>
     `;
 
@@ -128,6 +135,21 @@ function renderTrip(trip) {
       });
     });
 
+    // Map collapse/expand toggle
+    const mapWrapper = document.getElementById('map-sticky-wrapper');
+    const mapToggle = document.getElementById('map-toggle');
+    const mapBody = document.getElementById('map-sticky-body');
+
+    if (mapToggle && mapWrapper) {
+      mapToggle.addEventListener('click', () => {
+        const isCollapsed = mapWrapper.classList.toggle('collapsed');
+        // Invalidate map size when expanding
+        if (!isCollapsed && map) {
+          setTimeout(() => map.invalidateSize(), 350);
+        }
+      });
+    }
+
     // Attach event listeners for "Bekijk op kaart" links
     document.querySelectorAll('.view-on-map').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -136,16 +158,26 @@ function renderTrip(trip) {
         const lng = parseFloat(e.currentTarget.dataset.lng);
         const name = e.currentTarget.dataset.name;
 
+        // Expand map if collapsed
+        if (mapWrapper && mapWrapper.classList.contains('collapsed')) {
+          mapWrapper.classList.remove('collapsed');
+          if (map) {
+            setTimeout(() => map.invalidateSize(), 350);
+          }
+        }
+
         // Scroll to map
-        document.getElementById('leaflet-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('map-sticky-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         // Open popup
         if (map) {
-          map.setView([lat, lng], 17, { animate: true });
-          const marker = currentMarkers.find(m => m.options.title === name);
-          if (marker) {
-            setTimeout(() => marker.openPopup(), 500); // Wait for pan
-          }
+          setTimeout(() => {
+            map.setView([lat, lng], 17, { animate: true });
+            const marker = currentMarkers.find(m => m.options.title === name);
+            if (marker) {
+              setTimeout(() => marker.openPopup(), 500);
+            }
+          }, 400);
         }
       });
     });
@@ -162,28 +194,33 @@ function renderTrip(trip) {
 
 function createCategoryHTML(category) {
   const placesHTML = category.places.map(place => {
-    const slug = slugify(place.name);
     return `
       <article class="place-card ${place.isWildcard ? 'place-card-wildcard' : ''}" data-type="${category.type}">
         ${place.image ? `
         <div class="place-image-wrapper">
-          <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy">
+          <img src="${place.image}" alt="${place.name}" class="place-image" loading="lazy" onerror="this.outerHTML='<div class=\\'place-image-fallback\\'>${place.name.charAt(0)}</div>'">
         </div>
         ` : ''}
         <div class="place-content">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div class="place-header">
             <h3 class="place-name">
-              ${place.isWildcard ? '<i data-lucide="star" class="wildcard-icon" style="color: var(--color-restaurant); width: 16px; margin-right: 4px; display: inline-block; vertical-align: text-bottom;"></i> ' : ''}
+              ${place.isWildcard ? '<i data-lucide="star" class="wildcard-icon"></i> ' : ''}
               ${place.name}
             </h3>
             ${place.priceLevel ? `
             <div class="place-price" title="Prijsniveau: ${place.priceLevel} / 3">
-               <span style="color: ${place.priceLevel >= 1 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
-               <span style="color: ${place.priceLevel >= 2 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
-               <span style="color: ${place.priceLevel >= 3 ? 'var(--color-restaurant)' : 'var(--text-muted)'}; font-weight: bold;">€</span>
+               <span class="place-price-symbol ${place.priceLevel >= 1 ? 'place-price-symbol--active' : ''}">€</span>
+               <span class="place-price-symbol ${place.priceLevel >= 2 ? 'place-price-symbol--active' : ''}">€</span>
+               <span class="place-price-symbol ${place.priceLevel >= 3 ? 'place-price-symbol--active' : ''}">€</span>
             </div>
             ` : ''}
           </div>
+          ${place.rating ? `
+          <div class="place-rating" title="Google Maps: ${place.rating} / 5">
+            <i data-lucide="star" class="place-rating-star"></i>
+            <span class="place-rating-value">${place.rating}</span>
+          </div>
+          ` : ''}
           <p class="place-description">${place.description}</p>
           
           <div class="place-address">
@@ -192,8 +229,8 @@ function createCategoryHTML(category) {
           </div>
 
           ${place.openingHours ? `
-          <div class="place-hours" style="margin-top: var(--space-xs); font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: var(--space-xs);">
-            <i data-lucide="clock" style="width: 1em; height: 1em; margin-top: 2px;"></i>
+          <div class="place-hours">
+            <i data-lucide="clock"></i>
             <span>${place.openingHours}</span>
           </div>
           ` : ''}
@@ -208,7 +245,6 @@ function createCategoryHTML(category) {
             <div class="reviews-content">
               ${place.reviews.map(r => `
                 <div class="review-item">
-                  <div class="review-stars">★★★★★</div>
                   <p class="review-text">"${r.text}"</p>
                   <span class="review-author">— ${r.author}</span>
                 </div>
@@ -217,7 +253,7 @@ function createCategoryHTML(category) {
           </details>
           ` : ''}
 
-          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+          <div class="place-actions">
             ${place.link ? `
               <a href="${place.link}" target="_blank" rel="noopener noreferrer" class="place-link" data-type="${category.type}">
                 <i data-lucide="external-link"></i> Website
@@ -248,7 +284,9 @@ function createCategoryHTML(category) {
         <i data-lucide="chevron-down" class="category-chevron"></i>
       </div>
       <div class="category-places">
-        ${placesHTML}
+        <div class="category-places-inner">
+          ${placesHTML}
+        </div>
       </div>
     </section>
   `;
@@ -259,13 +297,6 @@ function createCategoryHTML(category) {
 function initMap(trip) {
   const mapEl = document.getElementById('leaflet-map');
   if (!mapEl) return;
-
-  // Maak globale L referentie veilig
-  const L = window.L;
-  if (!L) {
-    console.error('Leaflet not loaded');
-    return;
-  }
 
   // Cleanup old map if exists
   if (map) {
@@ -353,14 +384,4 @@ function initMap(trip) {
   }
 }
 
-// --- Utils ---
-function slugify(text) {
-  return text.toLowerCase().replace(/[\s\W-]+/g, '-');
-}
 
-// Ensure icon creation runs on initial load
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-});
