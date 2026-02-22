@@ -6,9 +6,39 @@ description: Hoe een nieuwe stad toevoegen en onderzoeken inclusief Google Maps 
 
 Gebruik deze workflow ALTIJD wanneer de gebruiker vraagt om een nieuwe stad te onderzoeken of toe te voegen aan de Weekendje Weg app.
 
+## Context & Smaakprofiel
+
+**Weekendje Weg** is een persoonlijke reisplanner (mobile-first web app) voor weekendtrips met partner. De app verzamelt handgepickte plekken per stad — geen standaard toeristische lijstjes, maar plekken die passen bij een specifieke smaak.
+
+### Smaak
+
+| Categorie | Voorkeur |
+|-----------|----------|
+| **Sfeer** | Intimate & craft — kleine zaken, eigenaar achter de bar, handwerk, aandacht voor detail. Chique mag ook: sterrenrestaurants en fine dining zijn welkom |
+| **Hotels** | Boutique, design hotel, B&B met karakter. Nooit ketens |
+| **Cocktailbars** | Ambachtelijk, creatieve cocktails, intiem interieur. Liever een verborgen bar dan een druk café |
+| **Restaurants** | Lokaal, seizoensgebonden, liefst deelgerechten of tasting menu. Sterrenrestaurants zijn een pluspunt zolang ze niet stijf zijn — Michelin-ster = bonus |
+| **Cultuur** | Prioriteit: **1. Filmtheaters** (arthouse), **2. Musea** (kunst/design/fotografie), **3. Theater** (kleinschalig, nieuw talent). Zie ook de uitschietersregel hieronder |
+| **Budget** | Middenklasse met uitschieters — €€ als basis, €€€ voor iets speciaals |
+
+### Cultuur: uitschietersregel
+
+Zoek naast de standaard cultuurcategorieën altijd ook naar plekken die *kenmerkend* zijn voor de stad. Als een stad een iconische brouwerij, een beroemde markthal, een bijzonder park of een ander cultureel fenomeen heeft dat er echt uitspringt (hoge rating, veel reviews, breed aanbevolen), neem het dan op — ook als het buiten de standaard categorieën valt. De stad dicteert wat bijzonder is, niet de vaste lijst.
+
+### Schrijfstijl voor beschrijvingen
+
+Beschrijvingen zijn **kort** (1-2 zinnen), in het **Nederlands**, wervend maar niet overdreven. Focus op wat de plek *uniek* maakt — niet op generieke superlatieven.
+
+**Voorbeelden van goede beschrijvingen:**
+- *"Dineren in twee authentieke treincoupés uit 1900 in de hippe Spoorzone. Creatieve menukaart met veel vegetarische opties. Absoluut uniek!"*
+- *"Verborgen parel in een woonwijk. Chefs combineren invloeden van Lanzarote, Ecuador en Madrid. Intiem tasting menu met verrassende smaken."*
+- *"Filmtheater met arthouse films, bijzondere vertoningen en een gezellige bar. De filmervaring die je zoekt, geen standaard bioscoop."*
+
+---
+
 ## Stap 1: Onderzoek de stad
 
-Zoek via **web search** naar de beste cocktailbars, restaurants en culturele plekken in de betreffende stad. Streef naar **minimaal 3 plekken per categorie**.
+Zoek via **web search** naar de beste cocktailbars, restaurants en culturele plekken in de betreffende stad. Streef naar **minimaal 3 plekken per categorie**. Gebruik het smaakprofiel hierboven om te bepalen welke plekken het beste passen.
 
 ### Hotels: meervoudige zoekstrategie
 

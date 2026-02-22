@@ -369,16 +369,21 @@ body {
 
 .category-places {
   display: grid;
-  gap: var(--space-md);
-  padding: var(--space-md) 0;
-  max-height: 0;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-slow);
+}
+
+.category-places-inner {
   overflow: hidden;
-  transition: max-height var(--transition-slow), padding var(--transition-base);
-  padding: 0;
+  display: grid;
+  gap: var(--space-md);
 }
 
 .category-section.open .category-places {
-  max-height: 2000px;
+  grid-template-rows: 1fr;
+}
+
+.category-section.open .category-places-inner {
   padding: var(--space-md) 0;
 }
 
@@ -436,6 +441,14 @@ body {
   box-shadow: 0 4px 15px rgba(209, 156, 91, 0.2);
 }
 
+.wildcard-icon {
+  color: var(--color-restaurant);
+  width: 16px;
+  margin-right: 4px;
+  display: inline-block;
+  vertical-align: text-bottom;
+}
+
 .place-reviews-accordion {
   margin-top: var(--space-md);
   background: var(--bg-secondary);
@@ -477,12 +490,6 @@ body {
   padding-top: 0;
 }
 
-.review-stars {
-  color: var(--color-restaurant);
-  font-size: 0.9rem;
-  margin-bottom: 2px;
-}
-
 .review-text {
   font-style: italic;
   color: var(--text-secondary);
@@ -503,6 +510,19 @@ body {
   background: var(--bg-secondary);
 }
 
+.place-image-fallback {
+  width: 100%;
+  height: 180px;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
 .place-image {
   width: 100%;
   height: 100%;
@@ -521,12 +541,81 @@ body {
   flex-direction: column;
 }
 
+.place-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
 .place-name {
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 1.1rem;
   margin-bottom: var(--space-xs);
   color: var(--text-primary);
+}
+
+.place-price {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.place-price-symbol {
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+.place-price-symbol--active {
+  color: var(--color-restaurant);
+}
+
+.place-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--space-sm);
+  padding: 3px 10px;
+  background: #FDF8F0;
+  border: 1px solid #F0E6D6;
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.place-rating-star {
+  width: 13px !important;
+  height: 13px !important;
+  color: #D4A035;
+  fill: #D4A035;
+  stroke: #D4A035;
+}
+
+.place-rating-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.place-hours {
+  margin-top: var(--space-xs);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.place-hours .lucide {
+  width: 1em;
+  height: 1em;
+  margin-top: 2px;
+}
+
+.place-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 .place-description {
@@ -621,37 +710,115 @@ body {
   opacity: 0.7;
 }
 
-/* --- Map Section --- */
-.map-section {
-  margin-top: var(--space-2xl);
-  padding: 0 var(--space-lg);
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
-  opacity: 0;
-}
-
-.map-section-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  color: var(--text-primary);
-}
-
-.map-section-title {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 1.2rem;
-}
-
-.map-container {
-  width: 100%;
-  height: 400px;
+/* --- Sticky Collapsible Map --- */
+.map-sticky-wrapper {
+  position: sticky;
+  top: 105px; /* Below top-bar + tabs */
+  z-index: 50;
+  margin: var(--space-lg) var(--space-md) 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
+  background: var(--bg-card);
+  transition: box-shadow var(--transition-base);
+}
+
+.map-sticky-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 2;
+  position: relative;
+}
+
+.map-sticky-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.map-sticky-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.map-sticky-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.map-legend-inline {
+  display: flex;
+  gap: 4px;
+}
+
+.legend-dot-wrapper--small {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.legend-dot-wrapper--small .lucide {
+  width: 11px;
+  height: 11px;
+}
+
+.map-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.map-collapse-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
+}
+
+.map-collapse-icon {
+  transition: transform var(--transition-base);
+}
+
+.map-sticky-wrapper.collapsed .map-collapse-icon {
+  transform: rotate(180deg);
+}
+
+.map-sticky-body {
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.map-sticky-wrapper.collapsed .map-sticky-body {
+  max-height: 0;
+}
+
+.map-sticky-wrapper.collapsed .map-sticky-header {
+  border-bottom-color: transparent;
+}
+
+.map-container {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
   background: #EBEAE4;
-  /* Fallback slightly warm gray */
 }
 
 /* Light/Warm Leaflet Overrides */
@@ -759,23 +926,6 @@ body {
 }
 
 /* --- Map Legend --- */
-.map-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  margin-top: var(--space-md);
-  padding: var(--space-md);
-  background: transparent;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
 .legend-dot-wrapper {
   display: flex;
   align-items: center;
