@@ -7,6 +7,7 @@ import L from 'leaflet';
 // --- Trip Imports ---
 import tilburg from './trips/tilburg.js';
 import leeuwarden from './trips/leeuwarden.js';
+import utrecht from './trips/utrecht.js';
 
 // --- Interactive Feature Imports ---
 import { showUserPicker } from './components/user-picker.js';
@@ -17,7 +18,7 @@ import { subscribeToTrip, unsubscribeFromTrip, placeSlug, getAllPlaceData, getUs
 import { renderAddPlaceFAB, removeAddPlaceFAB } from './components/add-place.js';
 
 // All trips (add new imports here)
-const trips = [tilburg, leeuwarden];
+const trips = [tilburg, leeuwarden, utrecht];
 
 // --- State ---
 let currentTrip = trips[0];
